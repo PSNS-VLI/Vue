@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*", "src/*/index"]
+    }
+  },
+  "vueCompilerOptions": {
+    "target": 2.7
+  },
+  "exclude": ["node_modules", "dist"],
+  "include": ["src/**/*"]
+}
