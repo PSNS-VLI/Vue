@@ -19,30 +19,24 @@
         >
           <a-button> <a-icon type="upload" /> 上传EXCEL </a-button>
         </a-upload>
-        <a-button type="primary" icon="download" @click="handleExcelExport">导出EXCEL</a-button>
+        <a-button
+          v-if="hasData"
+          type="primary"
+          icon="download"
+          @click="handleExcelExport">导出EXCEL</a-button>
         <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
       </div>
     </a-card>
     <!-- main content -->
     <a-card :bordered="false">
       <component
+        @change="handleBomChange"
+        :explosion-param="null"
         :cache-data="cacheData"
         :bom-data="bomData"
         :columns="columns"
         :is="tabActiveKey">
       </component>
-      <!-- <BomSummarizedExplosion
-        :hidden="tabActiveKey === 'BomTreeExplosion'"
-        :cache-data="cacheData"
-        :bom-data="bomData"
-        :columns="columns"
-      />
-      <BomTreeExplosion
-        :hidden="tabActiveKey === 'BomSummarizedExplosion'"
-        :cache-data="cacheData"
-        :bom-data="bomData"
-        :columns="columns"
-      /> -->
     </a-card>
 
     <!-- create model -->
@@ -61,6 +55,8 @@
 // eslint-disable-next-line
 import { util } from 'prettier'
 import { read, utils, writeFile } from 'xlsx'
+// eslint-disable-next-line
+import { generateKey  } from '@/utils/bom'
 
 // dynamic components
 import BomSummarizedExplosion from './BomSummarizedExplosion.vue'
@@ -96,6 +92,11 @@ export default {
       excelName: ''
     }
   },
+  computed: {
+    hasData: function () {
+      return this.bomData.length !== 0
+    }
+  },
   methods: {
     handleExcelUpload (excel) {
       var _this = this
@@ -124,9 +125,11 @@ export default {
         }))
         // init data
         excelJson = excelJson.map((item, index) => ({
-          key: index.toString(),
+          key: index,
+          index: index,
           ...item
         }))
+        // generateKey(excelJson, '子项编码')
         _this.bomData = excelJson
         _this.cacheData = excelJson.map(item => ({ ...item }))
       }
@@ -139,6 +142,7 @@ export default {
         utils.json_to_sheet(
           this.bomData.map(item => {
             delete item.key
+            delete item.index
             return item
           })
         )
@@ -147,6 +151,10 @@ export default {
         wb,
         this.excelName
       )
+    },
+    handleBomChange (data) {
+      this.bomData = data
+      this.cacheData = [...data]
     },
     handleAdd () {
       this.mdl = null

@@ -48,20 +48,18 @@ export default {
     }
   },
   computed: {
-    gData: {
-      get: function () {
-        return listToTree(this.bomData, '子项编码', '父项编码', (item) => ({
-          ...item,
-          key: `${item['子项编码']}`,
-          title: `${item['子项编码']}/${item['子项名称']}`
-        }))
-      },
-      set: function() {
-        
-      }
+    gData: function () {
+      return listToTree(this.bomData, '子项编码', '父项编码', (item) => ({
+        ...item,
+        key: `${item['子项编码']}`,
+        title: `${item['子项编码']}/${item['子项名称']}`
+      }))
     },
     dataList: function () {
-      return treeToList(this.gData)
+      return treeToList(this.gData, (item) => ({
+        key: item.key,
+        title: item.title
+      }))
     }
   },
   data () {
@@ -76,12 +74,12 @@ export default {
   },
   methods: {
     onDragEnter (info) {
-      console.log(info)
+      // console.log(info)
       // expandedKeys 需要受控时设置
       // this.expandedKeys = info.expandedKeys
     },
     onDrop (info) {
-      console.log(info)
+      // console.log(info)
       const dropKey = info.node.eventKey
       const dragKey = info.dragNode.eventKey
       const dropPos = info.node.pos.split('-')
@@ -108,6 +106,9 @@ export default {
         // Drop on the content
         loop(data, dropKey, item => {
           item.children = item.children || []
+          // Change the parentKey of the dragObj
+          // NOTE: THIS STATEMENT IS HIGHLY COUPLED WITH EXTERNAL FILE
+          dragObj['父项编码'] = Number(dropKey) || dropKey
           // where to insert
           item.children.push(dragObj)
         })
@@ -134,7 +135,7 @@ export default {
           ar.splice(i + 1, 0, dragObj)
         }
       }
-      this.gData = data
+      this.emitChange(data)
     },
     onExpand (expandedKeys) {
       this.expandedKeys = expandedKeys
@@ -155,6 +156,27 @@ export default {
         searchValue: value,
         autoExpandParent: true
       })
+    },
+    onContextMenuClick (treeKey, menuKey) {
+      this.$emit('menuClick', {
+        explosionParam: {
+          choosedElememt: treeKey,
+          explosionRule: Number(menuKey) - 1
+        }
+      })
+    },
+    emitChange (data) {
+      this.$emit('change', treeToList(data, (item) => {
+        delete item.key
+        delete item.title
+        return { ...item }
+      }).map((item, index) => {
+        delete item.children
+        return {
+          ...item,
+          key: index.toString()
+        }
+      }))
     }
   }
 }
