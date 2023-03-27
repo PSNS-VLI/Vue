@@ -41,14 +41,32 @@ export const asyncRouterMap = [
         name: 'bom',
         component: RouteView,
         redirect: '/bom/bom-list',
-        meta: { title: 'menu.list', icon: 'table', permission: ['table'] },
+        meta: { title: 'menu.bom', icon: 'table', permission: ['table'] },
         children: [
           {
             path: '/bom/bom-list',
             name: 'BomListWrapper',
             hideChildrenInMenu: true,
             component: () => import('@/views/bom/BomListWrapper'),
-            meta: { title: 'menu.list.table-list', keepAlive: true, permission: ['table'] }
+            meta: { title: 'menu.bom.bom-list', keepAlive: true, permission: ['table'] }
+          }
+        ]
+      },
+
+      // MPS
+      {
+        path: '/mps',
+        name: 'mps',
+        component: RouteView,
+        redirect: '/mps/mps-table',
+        meta: { title: 'menu.mps', icon: 'table', permission: ['table'] },
+        children: [
+          {
+            path: '/mps/mps-table',
+            name: 'MpsTable',
+            hideChildrenInMenu: true,
+            component: () => import('@/views/mps/MpsTable'),
+            meta: { title: 'menu.mps.mps-table', keepAlive: true, permission: ['table'] }
           }
         ]
       },
