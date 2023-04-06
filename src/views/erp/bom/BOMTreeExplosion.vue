@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { listToTree, treeToList, getParentKey } from '@/utils/bom'
+import { listToTree, treeToList, getParentKey } from '@/utils/erp'
 
 export default {
   name: 'BomTreeExplosion',

@@ -1,13 +1,13 @@
 import Queue from './datastructure/Queue'
 
 /**
- *
- * @param {Array} array
- * @param {String} currentKey
- * @param {String} parentKey
- * @param {String} ancestorTag
- * @param {Function} cleaner
- * @returns Array
+ * Converts a list structure to a tree sctructure
+ * @param {Object[]} array
+ * @param {string} currentKey
+ * @param {string} parentKey
+ * @param {string} ancestorTag
+ * @param {function} cleaner
+ * @returns {Object[]}
  */
 export function listToTree (array, currentKey, parentKey, cleaner = (item) => ({ ...item }), ancestorTag = '-') {
   array = array.map(item => cleaner(item))
@@ -36,16 +36,14 @@ export function listToTree (array, currentKey, parentKey, cleaner = (item) => ({
     }
     return false
   }
-
   levelOrder(tree, null, (item) => { delete item.searched })
-
   return tree
 }
 
 /**
- *
- * @param {Array} tree
- * @returns Array
+ * Converts a tree structure to a list structure
+ * @param {Object[]} tree
+ * @returns {Object[]}
  */
 export function treeToList (tree, cleaner = (item) => ({ ...item })) {
   const newTree = JSON.parse(JSON.stringify(tree))
@@ -53,15 +51,14 @@ export function treeToList (tree, cleaner = (item) => ({ ...item })) {
   levelOrder(newTree, null, node => {
     dataList.push(cleaner(node))
   })
-
   return dataList
 }
 
 /**
- *
- * @param {String} key
- * @param {Array} tree
- * @returns String<parentKey>
+ * Find the key value of the parent element
+ * @param {string} key
+ * @param {Object[]} tree
+ * @returns {string}
  */
 export function getParentKey (key, tree) {
   let parentKey
@@ -79,10 +76,10 @@ export function getParentKey (key, tree) {
 }
 
 /**
- *
- * @param {Array} tree
- * @param {String} childKey
- * @param {Function} callBack
+ * Sequence traversal
+ * @param {Object[]} tree
+ * @param {string} childKey
+ * @param {function} callBack
  */
 export function levelOrder (tree, childKey, callBack) {
   childKey = childKey || 'children'
@@ -105,9 +102,9 @@ export function levelOrder (tree, childKey, callBack) {
 }
 
 /**
- *
- * @param {Array} data
- * @param {String} keyName
+ * Add an attribuate named key for object
+ * @param {Object[]} data
+ * @param {string} keyName
  */
 export function generateKey (data, keyName) {
   data.map((item, index) => {
@@ -115,7 +112,20 @@ export function generateKey (data, keyName) {
   })
 }
 
-export function whoHasChild (data, currentKey, parentKey) {
-  return treeToList(listToTree(data, currentKey, parentKey))
-    .filter(item => item.children && item.children.length > 0)
+/**
+ * Filter out elements in the tree that have child elements
+ * @param {Object[]} data
+ * @param {string} childKey
+ * @param {boolean} isTree
+ * @param {string} currentKey
+ * @param {string} parentKey
+ * @returns
+ */
+export function whoHasChild (data, childKey, isTree, currentKey, parentKey) {
+  let res
+  isTree
+    ? res = treeToList(data)
+    : res = treeToList(listToTree(data, currentKey, parentKey))
+  res = res.filter(item => item[childKey] && item[childKey].length > 0)
+  return res
 }

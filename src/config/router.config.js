@@ -28,7 +28,7 @@ export const asyncRouterMap = [
         children: [
           {
             path: '/dashboard/workplace',
-            name: 'Workplace',
+            name: 'workplace',
             component: () => import('@/views/dashboard/Workplace'),
             meta: { title: 'menu.dashboard.workplace', keepAlive: true, permission: ['dashboard'] }
           }
@@ -37,36 +37,39 @@ export const asyncRouterMap = [
 
       // BOM
       {
-        path: '/bom',
-        name: 'bom',
+        path: '/erp',
+        name: 'erp',
         component: RouteView,
-        redirect: '/bom/bom-list',
-        meta: { title: 'menu.bom', icon: 'table', permission: ['table'] },
+        redirect: '/erp/bom',
+        meta: { title: 'menu.erp', icon: 'table', permission: ['table'] },
         children: [
           {
-            path: '/bom/bom-list',
-            name: 'BomListWrapper',
+            path: '/erp/bom',
+            name: 'erp-bom',
             hideChildrenInMenu: true,
-            component: () => import('@/views/bom/BomListWrapper'),
-            meta: { title: 'menu.bom.bom-list', keepAlive: true, permission: ['table'] }
-          }
-        ]
-      },
-
-      // MPS
-      {
-        path: '/mps',
-        name: 'mps',
-        component: RouteView,
-        redirect: '/mps/mps-table',
-        meta: { title: 'menu.mps', icon: 'table', permission: ['table'] },
-        children: [
+            component: () => import('@/views/erp/bom/BOMWrapper'),
+            meta: { title: 'menu.erp.bom', keepAlive: true, permission: ['table'] }
+          },
           {
-            path: '/mps/mps-table',
-            name: 'MpsTable',
+            path: '/erp/mps',
+            name: 'erp-mps',
             hideChildrenInMenu: true,
-            component: () => import('@/views/mps/MpsTable'),
-            meta: { title: 'menu.mps.mps-table', keepAlive: true, permission: ['table'] }
+            component: () => import('@/views/erp/mps/MPSWrapper'),
+            meta: { title: 'menu.erp.mps', keepAlive: true, permission: ['table'] }
+          },
+          {
+            path: '/erp/mrp',
+            name: 'erp-mrp',
+            hideChildrenInMenu: true,
+            component: () => import('@/views/erp/mrp/MRPWrapper'),
+            meta: { title: 'menu.erp.mrp', keepAlive: true, permission: ['table'] }
+          },
+          {
+            path: '/erp/crp',
+            name: 'erp-crp',
+            hideChildrenInMenu: true,
+            component: () => import('@/views/erp/crp/CRPWrapper'),
+            meta: { title: 'menu.erp.crp', keepAlive: true, permission: ['table'] }
           }
         ]
       },

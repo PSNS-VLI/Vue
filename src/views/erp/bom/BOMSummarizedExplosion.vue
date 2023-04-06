@@ -86,8 +86,8 @@
 <script>
 import { STable, Ellipsis } from '@/components'
 // eslint-disable-next-line
-import { getRoleList, getServiceList } from '@/api/manage'
-import { whoHasChild, treeToList, levelOrder } from '@/utils/bom'
+import { getRoleList } from '@/api/manage'
+import { whoHasChild, treeToList, levelOrder } from '@/utils/erp'
 
 export default {
   name: 'BomSummarizedExplosion',
@@ -117,7 +117,7 @@ export default {
   computed: {
     showElements () {
       return this.showParam.explosionRule !== 0
-        ? this.whoHasChild()
+        ? this.findParent()
         : []
     }
   },
@@ -165,12 +165,6 @@ export default {
     }
   },
   methods: {
-    startLoading () {
-      this.loading = true
-    },
-    endLoading () {
-      this.loading = false
-    },
     handleRuleChange (e) {
       this.$emit('showRuleChange')
     },
@@ -216,8 +210,8 @@ export default {
     emitChange (data) {
       this.$emit('change', data)
     },
-    thisChild () {
-      return whoHasChild(this.bomData, '子项编码', '父项编码')
+    findParent () {
+      return whoHasChild(this.bomData, 'children', false, '子项编码', '父项编码')
         .filter(item => item.key === this.showElements[this.showParam.choosedElement].key)
     },
     renderingTable () {
@@ -227,14 +221,14 @@ export default {
               return [...this.bomData]
           case 1:
             return treeToList(
-                this.thisChild()
+                this.findParent()
               ).map(item => {
                 delete item.children
                 return { ...item }
               })
           case 2:
             const _list = []
-            levelOrder(this.thisChild(), null, node => {
+            levelOrder(this.findParent(), null, node => {
               if (node.children && node.children.length === 0) _list.push(node)
             })
             return _list.map(item => {
