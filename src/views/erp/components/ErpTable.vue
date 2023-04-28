@@ -7,15 +7,32 @@
         :locale="locale"
         v-if="hasSide"
       >
-        <div slot="title" class="table-title" v-if="title">{{ title }}</div>
+        <template slot="title" v-if="title">
+          <div class="table-title">{{ title }}</div>
+        </template>
       </a-table>
 
       <a-table
         bordered
-        :columns="mainColumnsCopy"
+        :columns="mainColAndScoped.columns"
         :data-source="mainData"
         :pagination="false">
-        <div slot="title" class="table-title" v-if="!hasSide && title">{{ title }}</div>
+        <template slot="title" v-if="!hasSide && title">
+          <div class="table-title">{{ title }}</div>
+        </template>
+        <template v-for="item in mainColAndScoped.dataIndexList" :slot="item" slot-scope="text, record, index">
+          <div :key="item">
+            <a-input-number
+              v-if="isEdit && record.editable && !frozenList.includes(item)"
+              style="margin: -5px 0"
+              :value="text"
+              @change="e => handleChange(e, record, index, item)"
+            />
+            <template v-else>
+              {{ text }}
+            </template>
+          </div>
+        </template>
       </a-table>
     </div>
   </div>
@@ -25,6 +42,10 @@
 import EmptyNone from './EmptyNone.vue'
 
 export default {
+  model: {
+    prop: 'mainData',
+    event: 'change'
+  },
   props: {
     title: {
       type: String,
@@ -34,7 +55,15 @@ export default {
       type: Boolean,
       default: true
     },
+    isEdit: {
+      type: Boolean,
+      default: false
+    },
     sideColumns: {
+      type: Array,
+      default: () => []
+    },
+    frozenList: {
       type: Array,
       default: () => []
     },
@@ -52,8 +81,38 @@ export default {
     return { }
   },
   computed: {
-    mainColumnsCopy () {
-      return this.mainColumns.map((item) => ({ ...item }))
+    mainColAndScoped () {
+      const columns = this.mainColumns
+      const dataIndexList = []
+      function genScoped (columns) {
+        columns.forEach(item => {
+          // eslint-disable-next-line no-unused-expressions
+          item.dataIndex
+          ? (item.scopedSlots = { customRender: item.dataIndex }) && dataIndexList.push(item.dataIndex)
+          : item.children
+            ? genScoped(item.children)
+            : null
+        })
+      }
+      genScoped(columns)
+      return { columns, dataIndexList }
+    },
+    inputListeners: function () {
+      return Object.assign({},
+        this.$linsteners,
+        {
+          blur () {
+            this.$emit('change')
+          }
+        }
+      )
+    }
+  },
+  methods: {
+    handleChange (newValue, rowData, rowIndex, columnKey) {
+      const data = this.mainData.map(item => ({ ...item }))
+      data.find(item => item.key === rowData.key)[columnKey] = newValue
+      this.$emit('change', data)
     }
   }
 }
@@ -67,11 +126,11 @@ export default {
   align-items: center;
 }
 
-.ant-table-wrapper:first-child .ant-table-placeholder {
-  padding: unset;
+.table-wrapper >>> .ant-table-wrapper:first-child .ant-table-placeholder {
+  padding: 0;
 }
 
-.ant-table-wrapper:first-child .ant-table-thead > tr > th {
+.table-wrapper >>> .ant-table-wrapper:first-child .ant-table-thead > tr > th {
   border-bottom: none;
 }
 </style>

@@ -1,21 +1,25 @@
 <template>
-  <div class="table-wrapper">
-    <a-table
-      bordered
-      :columns="sideColumns"
-      :locale="locale">
-      <div slot="title" class="table-title">
-        PA26-50 的MPS
-      </div>
-    </a-table>
-
-    <a-table
-      bordered
-      :columns="mainColumns"
-      :data-source="mainData"
-      :pagination="false">
-    </a-table>
-  </div>
+  <a-card :bordered="false">
+    <div class="table-operation">
+      <a-row :gutter="48">
+        <a-col :md="6" :sm="24">
+          <a-button :type="isEdit ? 'default' : 'primary'" icon="edit" @click="isEdit = !isEdit">
+            <template v-if="isEdit">取消编辑</template>
+            <template v-else>编辑</template>
+          </a-button>
+        </a-col>
+      </a-row>
+    </div>
+    <div class="table-wrapper">
+      <ErpTable
+        title="PA26-50 的MPS"
+        :isEdit="isEdit"
+        :frozenList="frozenList"
+        :mainColumns="mainColumns"
+        :sideColumns="sideColumns"
+        v-model="mainData"/>
+    </div>
+  </a-card>
 </template>
 
 <script>
@@ -23,13 +27,13 @@ import {
   calGR
 } from '@/utils/erp.js'
 
-import EmptyNone from '../components/EmptyNone.vue'
+import ErpTable from '../components/ErpTable.vue'
 
 const mainColumns = [{
   title: '时区',
   children: [{
     title: '时段',
-    dataIndex: 'title'
+    dataIndex: 'name'
   }]
 }, {
   title: '当期',
@@ -89,9 +93,10 @@ const sideColumns = [{
 }]
 const mainData = [{
   key: '1',
-  title: '预测量',
+  editable: true,
+  name: '预测量',
   current_zone: '',
-  zone_1: '',
+  zone_1: '1',
   zone_2: '',
   zone_3: '',
   zone_4: '',
@@ -103,7 +108,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '2',
-  title: '订单量',
+  name: '订单量',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -117,7 +122,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '3',
-  title: '计划接收量',
+  name: '计划接收量',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -131,7 +136,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '4',
-  title: '毛需求量',
+  name: '毛需求量',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -145,7 +150,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '5',
-  title: 'PAB初值',
+  name: 'PAB初值',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -159,7 +164,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '6',
-  title: '净需求量',
+  name: '净需求量',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -173,7 +178,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '7',
-  title: '计划产出量',
+  name: '计划产出量',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -187,7 +192,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '8',
-  title: 'PAB',
+  name: 'PAB',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -201,7 +206,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '9',
-  title: '计划投入',
+  name: '计划投入',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -215,7 +220,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '10',
-  title: 'ATP',
+  name: 'ATP',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -229,16 +234,25 @@ const mainData = [{
   zone_10: ''
 }]
 export default {
+  components: {
+    ErpTable
+  },
   data () {
-    this.locale = { emptyText: <EmptyNone /> }
+    this.frozenList = ['name']
     return {
       mainColumns,
       sideColumns,
-      mainData
+      mainData,
+      isEdit: false
     }
   },
   created () {
-    console.log(mainColumns)
+  },
+  watch: {
+    mainData (n, o) {
+      console.log('旧', o)
+      console.log(n)
+    }
   },
   method: {
     /**
@@ -262,19 +276,8 @@ export default {
 }
 </script>
 
-<style>
-.table-title {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-.ant-table-wrapper:first-child .ant-table-placeholder {
-  padding: unset;
-}
-
-.ant-table-wrapper:first-child .ant-table-thead > tr > th {
-  border-bottom: none;
+<style scoped>
+.table-operation {
+  margin-bottom: 20px;
 }
 </style>

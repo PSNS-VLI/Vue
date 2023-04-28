@@ -6,19 +6,21 @@
       this.tabActiveKey = key
     }"
   >
-    <MPS-Table v-show="tabActiveKey === 'MpsTable'"/>
-    <RCCP v-show="tabActiveKey === 'RCCP'"/>
+    <a-card :bordered="false">
+      <MPS v-show="tabActiveKey === 'MpsTable'"/>
+      <RCCP v-show="tabActiveKey === 'RCCP'"/>
+    </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-  import MPSTable from './MPSTable.vue'
+  import MPS from './MPS.vue'
   import RCCP from './RCCP.vue'
   export default {
     components: {
-    MPSTable,
-    RCCP
-  },
+      MPS,
+      RCCP
+    },
     data () {
       this.tabList = [
         { key: 'MpsTable', tab: '主生产计划表' },

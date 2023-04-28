@@ -1,25 +1,20 @@
 <template>
-  <div class="wrapper">
-    <div class="table-wrapper">
-      <a-table bordered :columns="sideColumns" :locale="locale">
-        <div slot="title" class="table-title">
-          zxca-f 的 MRP
-        </div>
-      </a-table>
-
-      <a-table bordered :columns="mainColumns" :data-source="mainData" :pagination="false">
-      </a-table>
-    </div>
+  <div class="table-wrapper">
+    <ErpTable
+      title="PA26-50 的MPS"
+      :mainColumns="mainColumns"
+      :sideColumns="sideColumns"
+      v-model="mainData"/>
   </div>
 </template>
 
 <script>
-import EmptyNone from '../components/EmptyNone.vue'
+import ErpTable from '../components/ErpTable.vue'
 
 // eslint-disable-next-line
 const mainColumns = [{
   title: '时段',
-  dataIndex: 'title'
+  dataIndex: 'name'
 }, {
   title: '当期',
   dataIndex: 'current_zone'
@@ -82,7 +77,7 @@ const sideColumns = [{
 }]
 const mainData = [{
   key: '1',
-  title: '{}计划投入量',
+  name: '{}计划投入量',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -96,7 +91,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '2',
-  title: '计划接收量',
+  name: '计划接收量',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -110,7 +105,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '3',
-  title: '毛需求量',
+  name: '毛需求量',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -124,7 +119,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '4',
-  title: 'PAB初值',
+  name: 'PAB初值',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -138,7 +133,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '5',
-  title: '净需求量',
+  name: '净需求量',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -152,7 +147,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '6',
-  title: '计划产出量',
+  name: '计划产出量',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -166,7 +161,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '7',
-  title: 'PAB',
+  name: 'PAB',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -180,7 +175,7 @@ const mainData = [{
   zone_10: ''
 }, {
   key: '9',
-  title: '计划投入量',
+  name: '计划投入量',
   current_zone: '',
   zone_1: '',
   zone_2: '',
@@ -194,8 +189,10 @@ const mainData = [{
   zone_10: ''
 }]
 export default {
+  components: {
+    ErpTable
+  },
   data () {
-    this.locale = { emptyText: <EmptyNone /> }
     return {
       mainColumns,
       sideColumns,
@@ -208,18 +205,4 @@ export default {
 </script>
 
 <style>
-.table-title {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-.ant-table-wrapper:first-child .ant-table-placeholder {
-  padding: unset;
-}
-
-.ant-table-wrapper:first-child .ant-table-thead>tr>th {
-  border-bottom: none;
-}
 </style>

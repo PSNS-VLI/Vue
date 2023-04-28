@@ -23,17 +23,17 @@
       </div>
     </a-card>
     <a-card :bordered="false">
-      <MRPTable />
+      <MRP />
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-import MRPTable from './MRPTable.vue'
+import MRP from './MRP.vue'
 
 export default {
   components: {
-    MRPTable
+    MRP
   },
   data () {
     this.showRules = [{
