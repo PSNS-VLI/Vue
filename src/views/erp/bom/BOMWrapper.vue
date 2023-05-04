@@ -52,8 +52,6 @@
 </template>
 
 <script>
-  // eslint-disable-next-line
-  import { util } from 'prettier'
   import { read, utils, writeFile } from 'xlsx'
   // eslint-disable-next-line
   import { generateKey  } from '@/utils/erp'
