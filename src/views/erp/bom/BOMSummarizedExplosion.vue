@@ -42,17 +42,17 @@
     <a-table
       :loading="loading"
       :pagination="false"
-      :columns="columns"
+      :columns="mainColumns"
       :data-source="tData"
     >
       <template slot="title">
       </template>
       <template
-        v-for="col in columns"
+        v-for="col in mainColumns"
         :slot="col.scopedSlots.customRender"
         slot-scope="text, record"
       >
-        <template v-if="col.scopedSlots.customRender !== 'operation'">
+        <template v-if="col.scopedSlots.customRender !== operKey">
           <div :key="col.scopedSlots.customRender">
             <a-input
               v-if="record.editable"
@@ -84,10 +84,12 @@
 </template>
 
 <script>
-import { STable, Ellipsis } from '@/components'
+import cloneDeep from 'lodash.clonedeep'
 // eslint-disable-next-line
 import { getRoleList } from '@/api/manage'
 import { whoHasChild, treeToList, levelOrder } from '@/utils/erp'
+
+import { STable, Ellipsis } from '@/components'
 
 export default {
   name: 'BomSummarizedExplosion',
@@ -114,13 +116,6 @@ export default {
       default: () => ({})
     }
   },
-  computed: {
-    showElements () {
-      return this.showParam.explosionRule !== 0
-        ? this.findParent()
-        : []
-    }
-  },
   data () {
     this.showRules = [{
       key: 'identedExplosion',
@@ -135,13 +130,15 @@ export default {
       value: 2,
       name: '尾阶展开'
     }]
+    this.operKey = 'operation'
+    this.cacheData = []
     return {
       // show param
       showParam: {
         explosionRule: 0,
         defaultRule: 0,
-        defaultChoose: 0,
         choosedElement: 0,
+        defaultChoose: 0,
         nameKey: '子项名称'
       },
       tData: [],
@@ -150,8 +147,25 @@ export default {
       editingKey: ''
     }
   },
+  computed: {
+    mainColumns () {
+      const columns = this.columns
+      columns.push({
+        title: '操作',
+        scopedSlots: { customRender: this.operKey }
+      })
+      return columns.map(item => ({
+        ...item,
+        width: `${100 / columns.length}%`
+      }))
+    },
+    showElements () {
+      return whoHasChild(this.bomData, 'children', true, '子项编码', '父项编码')
+    }
+  },
   watch: {
-    bomData () {
+    bomData (n) {
+      this.cacheData = cloneDeep(n)
       this.renderingTable()
     },
     explosionParam (val) {
@@ -172,7 +186,7 @@ export default {
       this.$emit('showChooseChange')
     },
     handleChange (value, key, column) {
-      const newData = [...this.tData]
+      const newData = cloneDeep(this.tData)
       const target = newData.find(item => key === item.key)
       if (target) {
         target[column] = value
@@ -180,7 +194,7 @@ export default {
       }
     },
     handleEdit (key) {
-      const newData = [...this.tData]
+      const newData = cloneDeep(this.tData)
       const target = newData.find(item => key === item.key)
       this.editingKey = key
       if (target) {
@@ -189,16 +203,16 @@ export default {
       }
     },
     handleSave (key) {
-      const newData = [...this.tData]
+      const newData = cloneDeep(this.tData)
       const target = newData.find(item => key === item.key)
       if (target) {
         delete target.editable
-        this.emitChange(newData)
+        this.$emit('change', newData)
       }
       this.editingKey = ''
     },
     handleCancel (key) {
-      const newData = [...this.tData]
+      const newData = cloneDeep(this.tData)
       const target = newData.find(item => key === item.key)
       this.editingKey = ''
       if (target) {
@@ -207,18 +221,15 @@ export default {
         this.tData = newData
       }
     },
-    emitChange (data) {
-      this.$emit('change', data)
-    },
     findParent () {
-      return whoHasChild(this.bomData, 'children', false, '子项编码', '父项编码')
+      return this.showElements
         .filter(item => item.key === this.showElements[this.showParam.choosedElement].key)
     },
     renderingTable () {
      this.tData = (() => {
         switch (this.showParam.explosionRule) {
           case 0:
-              return [...this.bomData]
+              return cloneDeep(this.bomData)
           case 1:
             return treeToList(
                 this.findParent()
@@ -243,7 +254,7 @@ export default {
   },
   created () {
     getRoleList({ t: new Date() })
-    this.renderingTable()
+    // this.renderingTable()
   }
 }
 </script>

@@ -32,7 +32,6 @@
       <component
         @change="handleBomChange"
         :explosion-param="null"
-        :cache-data="cacheData"
         :bom-data="bomData"
         :columns="columns"
         :is="tabActiveKey">
@@ -54,6 +53,8 @@
 <script>
 import { read, utils, writeFile } from 'xlsx'
 // eslint-disable-next-line
+import cloneDeep from 'lodash.clonedeep'
+// eslint-disable-next-line
 import { generateKey } from '@/utils/erp'
 import { createNamespacedHelpers } from 'vuex'
 
@@ -62,7 +63,7 @@ import BomSummarizedExplosion from './BOMSummarizedExplosion.vue'
 import BomTreeExplosion from './BOMTreeExplosion.vue'
 import CreateForm from './modules/CreateForm.vue'
 
-const { mapState } = createNamespacedHelpers('erp/bom')
+const { mapState, mapMutations } = createNamespacedHelpers('erp/bom')
 
 export default {
   name: 'BomListWrapper',
@@ -78,31 +79,38 @@ export default {
     ]
     // upload file types
     this.excelType = '.xls, .xlsx'
-    this.cacheData = []
     return {
       // create model
       visible: false,
       confirmLoading: false,
       mdl: null,
       // tabbar
-      tabActiveKey: 'BomSummarizedExplosion'
+      tabActiveKey: 'BomSummarizedExplosion',
+      columns: []
     }
   },
   computed: {
     // bom data present and operation
     ...mapState([
-      'bomData',
-      'columns',
-      'excelName'
+      'excelName',
+      'bomData'
     ]),
     hasData: function () {
       return this.bomData.length !== 0
     }
   },
+  created () {
+    const excelJson = this.$store.erp.bom.excelJson
+    if (excelJson.length > 0) this.initColumns(excelJson)
+  },
   methods: {
+    ...mapMutations([
+      'setExcelJson',
+      'setExcelName'
+    ]),
     handleExcelUpload (excel) {
       var self = this
-      self.excelName = excel.name
+      self.setExcelName({ data: excel.name })
       var reader = new FileReader()
       reader.onload = function (e) {
         var wb = read(e.target.result, {
@@ -111,29 +119,13 @@ export default {
         var excelJson = utils.sheet_to_json(
           wb.Sheets[wb.SheetNames[0]]
         )
-        // init columns
-        self.columns = Object.keys(excelJson[0]).map(item => ({
-          title: item,
-          dataIndex: item,
-          scopedSlots: { customRender: item }
-        }))
-        self.columns.push({
-          title: '操作',
-          scopedSlots: { customRender: 'operation' }
+        self.initColumns(excelJson)
+        self.setBomData({
+          data: excelJson.map((item, index) => ({
+            key: index,
+            ...item
+          }))
         })
-        self.columns = self.columns.map(item => ({
-          ...item,
-          width: `${100 / self.columns.length}%`
-        }))
-        // init data
-        excelJson = excelJson.map((item, index) => ({
-          key: index,
-          index: index,
-          ...item
-        }))
-        // generateKey(excelJson, '子项编码')
-        self.bomData = excelJson
-        self.cacheData = excelJson.map(item => ({ ...item }))
       }
       reader.readAsArrayBuffer(excel)
     },
@@ -155,8 +147,7 @@ export default {
       )
     },
     handleBomChange (data) {
-      this.bomData = data
-      this.cacheData = [...data]
+      this.setBomData({ data })
     },
     handleAdd () {
       this.mdl = null
@@ -211,6 +202,14 @@ export default {
 
       const form = this.$refs.createModal.form
       form.resetFields() // 清理表单数据（可不做）
+    },
+    initColumns (excelJson) {
+      const columns = Object.keys(excelJson[0]).map(item => ({
+        title: item,
+        dataIndex: item,
+        scopedSlots: { customRender: item }
+      }))
+      this.columns = columns
     }
   }
 }

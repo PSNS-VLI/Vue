@@ -38,10 +38,6 @@ export default {
   name: 'BomTreeExplosion',
   props: {
     // bom data present and operation
-    cacheData: {
-      type: Array,
-      default: () => []
-    },
     bomData: {
       type: Array,
       default: () => []

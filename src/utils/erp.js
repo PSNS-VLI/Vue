@@ -28,6 +28,7 @@ export function listToTree (array, currentKey, parentKey, cleaner, ancestorTag) 
         findChild(item, item[currentKey])
       }
     })
+    if (treeNode.children.length === 0) delete treeNode.children
   }
   levelOrder(tree, null, item => { delete item.searched })
   return tree
@@ -111,11 +112,12 @@ export function generateKey (data, keyName) {
  * @param {string} parentKey
  * @returns
  */
-export function whoHasChild (data, childKey, isTree, currentKey, parentKey) {
+export function whoHasChild (data, childKey, notTree, currentKey, parentKey) {
+  childKey = childKey || 'children'
   let res
-  isTree
-    ? res = treeToList(data)
-    : res = treeToList(listToTree(data, currentKey, parentKey))
+  notTree
+    ? res = treeToList(listToTree(data, currentKey, parentKey))
+    : res = treeToList(data)
   res = res.filter(item => item[childKey] && item[childKey].length > 0)
   return res
 }
