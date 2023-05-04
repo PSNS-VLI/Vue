@@ -1,4 +1,5 @@
 import Queue from './datastructure/Queue'
+import cloneDeep from 'lodash.clonedeep'
 
 /**
  * Converts a list structure to a tree sctructure
@@ -9,34 +10,26 @@ import Queue from './datastructure/Queue'
  * @param {function} cleaner
  * @returns {Object[]}
  */
-export function listToTree (array, currentKey, parentKey, cleaner = (item) => ({ ...item }), ancestorTag = '-') {
+export function listToTree (array, currentKey, parentKey, cleaner, ancestorTag) {
+  cleaner = cleaner || (item => item)
+  ancestorTag = ancestorTag || '-'
+  array = cloneDeep(array)
   array = array.map(item => cleaner(item))
-  const tree = []
-  const index = []
-  for (let i = 0; i < array.length; i++) {
-    if (array[i][parentKey] === ancestorTag) {
-      tree.push(Object.assign(array[i], { children: [] }))
-      index.push(i)
-    }
-  }
-  for (const i of index) array.splice(i, 1)
-
-  for (let i = 0; i < tree.length; i++) {
-    findChild(tree[i], tree[i][currentKey])
-  }
-
+  const tree = array.filter(
+    item => item[parentKey] === ancestorTag).map(
+      item => Object.assign({}, item, { children: [] }))
+  tree.forEach(item => findChild(item, item[currentKey]))
   function findChild (treeNode, parentTag) {
-    for (let i = 0; i < array.length; i++) {
-      if (array[i][parentKey] === parentTag && !array[i].searched) {
-        array[i].searched = true
-        array[i].children = []
-        findChild(array[i], array[i][currentKey])
-        treeNode.children.push(array[i])
+    array.forEach(item => {
+      if (!item.searched && item[parentKey] === parentTag) {
+        treeNode.children.push(item)
+        item.searched = true
+        item.children = []
+        findChild(item, item[currentKey])
       }
-    }
-    return false
+    })
   }
-  levelOrder(tree, null, (item) => { delete item.searched })
+  levelOrder(tree, null, item => { delete item.searched })
   return tree
 }
 
@@ -45,10 +38,11 @@ export function listToTree (array, currentKey, parentKey, cleaner = (item) => ({
  * @param {Object[]} tree
  * @returns {Object[]}
  */
-export function treeToList (tree, cleaner = (item) => ({ ...item })) {
-  const newTree = JSON.parse(JSON.stringify(tree))
+export function treeToList (tree, cleaner) {
+  cleaner = cleaner || (item => item)
+  tree = cloneDeep(tree)
   const dataList = []
-  levelOrder(newTree, null, node => {
+  levelOrder(tree, null, node => {
     dataList.push(cleaner(node))
   })
   return dataList
@@ -83,20 +77,16 @@ export function getParentKey (key, tree) {
  */
 export function levelOrder (tree, childKey, callBack) {
   childKey = childKey || 'children'
-  callBack = callBack || (() => {})
+  callBack = callBack || (item => {})
   const queue = new Queue()
 
-  for (const child of tree) {
-    queue.enqueue(child)
-  }
+  tree.forEach(item => queue.enqueue(item))
 
   while (!queue.isEmpty()) {
     const node = queue.dequeue()
     callBack(node)
     if (node[childKey] && node[childKey].length > 0) {
-      for (const child of node[childKey]) {
-        queue.enqueue(child)
-      }
+      node[childKey].forEach(item => queue.enqueue(item))
     }
   }
 }

@@ -1,4 +1,4 @@
-const erp = {
+const mps = {
   namespaced: true,
   state: {
 
@@ -11,4 +11,4 @@ const erp = {
   }
 }
 
-export default erp
+export default mps
