@@ -99,10 +99,6 @@ export default {
   },
   props: {
     // bom data present and operation
-    cacheData: {
-      type: Array,
-      default: () => []
-    },
     bomData: {
       type: Array,
       default: () => []
@@ -149,7 +145,7 @@ export default {
   },
   computed: {
     mainColumns () {
-      const columns = this.columns
+      const columns = cloneDeep(this.columns)
       columns.push({
         title: '操作',
         scopedSlots: { customRender: this.operKey }
@@ -164,12 +160,12 @@ export default {
     }
   },
   watch: {
-    bomData (n) {
-      this.cacheData = cloneDeep(n)
+    bomData (cur) {
+      this.cacheData = cloneDeep(cur)
       this.renderingTable()
     },
-    explosionParam (val) {
-      Object.assign(this.showParam, val)
+    explosionParam (cur) {
+      Object.assign(this.showParam, cur)
     },
     [`showParam.choosedElement`] () {
       this.renderingTable()
@@ -221,10 +217,6 @@ export default {
         this.tData = newData
       }
     },
-    findParent () {
-      return this.showElements
-        .filter(item => item.key === this.showElements[this.showParam.choosedElement].key)
-    },
     renderingTable () {
      this.tData = (() => {
         switch (this.showParam.explosionRule) {
@@ -232,19 +224,22 @@ export default {
               return cloneDeep(this.bomData)
           case 1:
             return treeToList(
-                this.findParent()
+              this.showElements[this.showParam.choosedElement].children
               ).map(item => {
                 delete item.children
-                return { ...item }
+                return item
               })
           case 2:
             const _list = []
-            levelOrder(this.findParent(), null, node => {
+            levelOrder(
+              this.showElements[this.showParam.choosedElement].children,
+              null,
+              node => {
               if (node.children && node.children.length === 0) _list.push(node)
             })
             return _list.map(item => {
               delete item.children
-              return { ...item }
+              return item
             })
           default:
             return []
@@ -253,8 +248,9 @@ export default {
     }
   },
   created () {
+    this.cacheData = cloneDeep(this.bomData)
+    this.renderingTable()
     getRoleList({ t: new Date() })
-    // this.renderingTable()
   }
 }
 </script>

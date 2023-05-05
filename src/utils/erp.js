@@ -13,6 +13,7 @@ import cloneDeep from 'lodash.clonedeep'
 export function listToTree (array, currentKey, parentKey, cleaner, ancestorTag) {
   cleaner = cleaner || (item => item)
   ancestorTag = ancestorTag || '-'
+  if (array.length === 0) return []
   array = cloneDeep(array)
   array = array.map(item => cleaner(item))
   const tree = array.filter(

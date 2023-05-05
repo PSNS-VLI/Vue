@@ -7,8 +7,9 @@
     }"
   >
     <a-card :bordered="false">
-      <MPS v-show="tabActiveKey === 'MpsTable'"/>
-      <RCCP v-show="tabActiveKey === 'RCCP'"/>
+      <component
+        :is="tabActiveKey">
+      </component>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -27,7 +28,7 @@
         { key: 'RCCP', tab: '粗能力计划' }
       ]
       return {
-        tabActiveKey: 'MpsTable'
+        tabActiveKey: 'Mps'
       }
     }
   }

@@ -20,7 +20,7 @@
           <a-button> <a-icon type="upload" /> 上传EXCEL </a-button>
         </a-upload>
         <a-button
-          v-if="hasData"
+          v-if="bomData.length > 0"
           type="primary"
           icon="download"
           @click="handleExcelExport">导出EXCEL</a-button>
@@ -85,8 +85,7 @@ export default {
       confirmLoading: false,
       mdl: null,
       // tabbar
-      tabActiveKey: 'BomSummarizedExplosion',
-      columns: []
+      tabActiveKey: 'BomSummarizedExplosion'
     }
   },
   computed: {
@@ -95,17 +94,23 @@ export default {
       'excelName',
       'bomData'
     ]),
-    hasData: function () {
-      return this.bomData.length !== 0
+    columns () {
+      const columns = this.bomData[0]
+      return columns ? Object.keys(columns).filter(
+        item => item !== 'key'
+      ).map(item => ({
+        title: item,
+        dataIndex: item,
+        scopedSlots: { customRender: item }
+      }))
+      : []
     }
   },
   created () {
-    const excelJson = this.$store.erp.bom.excelJson
-    if (excelJson.length > 0) this.initColumns(excelJson)
   },
   methods: {
     ...mapMutations([
-      'setExcelJson',
+      'setBomData',
       'setExcelName'
     ]),
     handleExcelUpload (excel) {
@@ -119,7 +124,6 @@ export default {
         var excelJson = utils.sheet_to_json(
           wb.Sheets[wb.SheetNames[0]]
         )
-        self.initColumns(excelJson)
         self.setBomData({
           data: excelJson.map((item, index) => ({
             key: index,
@@ -202,14 +206,6 @@ export default {
 
       const form = this.$refs.createModal.form
       form.resetFields() // 清理表单数据（可不做）
-    },
-    initColumns (excelJson) {
-      const columns = Object.keys(excelJson[0]).map(item => ({
-        title: item,
-        dataIndex: item,
-        scopedSlots: { customRender: item }
-      }))
-      this.columns = columns
     }
   }
 }

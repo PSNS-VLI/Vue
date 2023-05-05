@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import app from './modules/app'
 import user from './modules/user'
+import erp from './modules/erp'
 
 // default router permission control
 // 默认路由模式为静态路由 (router.config.js)
@@ -20,7 +21,8 @@ export default new Vuex.Store({
   modules: {
     app,
     user,
-    permission
+    permission,
+    erp
   },
   state: {},
   mutations: {},

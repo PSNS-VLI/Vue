@@ -1,3 +1,5 @@
+import { listToTree } from '@/utils/erp'
+
 import bom from './bom.js'
 import mps from './mps.js'
 import mrp from './mrp.js'
@@ -12,13 +14,15 @@ const erp = {
     crp
   },
   state: {
-
+  },
+  getters: {
+    bomTree (state) {
+      return listToTree(state.bom.bomData)
+    }
   },
   mutations: {
-
   },
   actions: {
-
   }
 }
 
