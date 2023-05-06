@@ -248,12 +248,6 @@ export default {
   },
   created () {
   },
-  watch: {
-    mainData (n, o) {
-      console.log('旧', o)
-      console.log(n)
-    }
-  },
   method: {
     /**
      * calculate master production schedule

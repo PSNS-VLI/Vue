@@ -1,6 +1,11 @@
 import Queue from './datastructure/Queue'
 import cloneDeep from 'lodash.clonedeep'
 
+import {
+  mpsMainColumns,
+  mpsMainData
+} from '@/config/erp.config'
+
 /**
  * Converts a list structure to a tree sctructure
  * @param {Object[]} array
@@ -124,6 +129,10 @@ export function whoHasChild (data, childKey, notTree, currentKey, parentKey) {
 }
 
 /** erp */
+
+export function getMainColumns (model, timeFenceArray, callBack) {
+
+}
 
 /**
  * calculate gross requirement
