@@ -159,18 +159,24 @@ export default {
       return whoHasChild(this.bomData, 'children', true, '子项编码', '父项编码')
     }
   },
+  created () {
+    getRoleList({ t: new Date() })
+  },
   watch: {
-    bomData (cur) {
-      this.cacheData = cloneDeep(cur)
+    bomData: {
+      immediate: true,
+      handler (val) {
+        this.cacheData = cloneDeep(val)
+        this.renderingTable()
+      }
+    },
+    explosionParam (val) {
+      Object.assign(this.showParam, val)
+    },
+    'showParam.choosedElement' () {
       this.renderingTable()
     },
-    explosionParam (cur) {
-      Object.assign(this.showParam, cur)
-    },
-    [`showParam.choosedElement`] () {
-      this.renderingTable()
-    },
-    [`showParam.explosionRule`] () {
+    'showParam.explosionRule' () {
       this.renderingTable()
     }
   },
@@ -246,11 +252,6 @@ export default {
         }
       })()
     }
-  },
-  created () {
-    this.cacheData = cloneDeep(this.bomData)
-    this.renderingTable()
-    getRoleList({ t: new Date() })
   }
 }
 </script>

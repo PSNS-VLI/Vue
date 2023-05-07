@@ -2,8 +2,9 @@ import Queue from './datastructure/Queue'
 import cloneDeep from 'lodash.clonedeep'
 
 import {
-  mpsMainColumns,
-  mpsMainData
+  zoneList,
+  mpsTableColumns,
+  mpsTableData
 } from '@/config/erp.config'
 
 /**
@@ -130,8 +131,58 @@ export function whoHasChild (data, childKey, notTree, currentKey, parentKey) {
 
 /** erp */
 
-export function getMainColumns (model, timeFenceArray, callBack) {
+/**
+ * generate main columns template for erp table
+ * @param {string} model tag of which module to be processed
+ * @param {number[]} timeFenceArray  time fence array
+ * @returns {Object[]}
+ */
+export function getTableColumnsTem (model, timeFenceArray) {
+  let columns
+  let i = 0
+  if (model === 'mps') {
+    columns = mpsTableColumns
+  }
+  columns = columns.concat(
+    timeFenceArray.slice(0, zoneList.length).map(
+      (fence, index) => ({
+        title: zoneList[index],
+        children: Array(fence).fill(0).map(_ => ({
+          title: (++i).toString(),
+          dataIndex: `zone_${i}`
+        }))
+      })
+    )
+  )
+  return columns
+}
 
+/**
+ * generate main data template for erp table
+ * @param {string} model tag of which module to be processed
+ * @param {number[]} timeFenceArray  time fence array
+ * @returns {Object[]}
+ */
+export function getTableDataTem (model, timeFenceArray) {
+  let data
+  let i = 0
+  if (model === 'mps') {
+    data = mpsTableData
+  }
+  const zoneKey = Array(
+    timeFenceArray.reduce((pre, cur) => pre + cur)
+    ).fill(0).reduce(pre => {
+      ++i
+      pre[`zone_${i}`] = ''
+      return pre
+    }, {})
+  data = data.map((name, index) => Object.assign({
+    key: index.toString(),
+    editable: true,
+    name
+  }, zoneKey))
+  console.log(data)
+  return data
 }
 
 /**
@@ -142,7 +193,7 @@ export function getMainColumns (model, timeFenceArray, callBack) {
  * @param {number} [CT=1] current time zone index
  * @returns {number[]} an array of gross requirment
  */
-export function alGR (PVList, OVList, TFL, CT = 1) {
+export function calGR (PVList, OVList, TFL, CT = 1) {
   const GRList = initArrayZero(PVList.length)
   for (CT; CT < PVList.length; CT++) {
     let v = 0

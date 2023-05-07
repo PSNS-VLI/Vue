@@ -1,4 +1,4 @@
-const mpsMainColumns = [{
+const mpsTableColumns = [{
   title: '时区',
   children: [{
     title: '时段',
@@ -9,7 +9,7 @@ const mpsMainColumns = [{
   dataIndex: 'current_zone'
 }]
 const zoneList = ['需求时区', '计划时区', '预测时区']
-const mpsMainData = [
+const mpsTableData = [
   '预测量',
   '订单量',
   '计划接收量',
@@ -22,8 +22,8 @@ const mpsMainData = [
   'ATP'
 ]
 
-export default {
-  mpsMainColumns,
+export {
+  mpsTableColumns,
   zoneList,
-  mpsMainData
+  mpsTableData
 }
