@@ -7,12 +7,14 @@
     }"
   >
     <a-card :bordered="false">
-      <component
-        :sideColumns="sideColumns"
-        :mainColumns="mainColumns"
-        :tableData="tableData"
-        :is="tabActiveKey">
-      </component>
+      <keep-alive>
+        <component
+          :sideColumns="sideColumns"
+          :mainColumns="mainColumns"
+          :tableData="tableData"
+          :is="tabActiveKey">
+        </component>
+      </keep-alive>
     </a-card>
   </page-header-wrapper>
 </template>

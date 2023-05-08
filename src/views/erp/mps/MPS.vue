@@ -23,9 +23,8 @@
 </template>
 
 <script>
-import cloneDeep from 'lodash.clonedeep'
 import {
-  calGR
+  calMPS
 } from '@/utils/erp.js'
 
 import ErpTable from '../components/ErpTable.vue'
@@ -51,37 +50,34 @@ export default {
   data () {
     this.frozenList = ['name']
     return {
-      isEdit: false
+      isEdit: false,
+      mainData: []
     }
   },
   watch: {
     tableData: {
       immediate: true,
       handler (val) {
-        this.mainData = cloneDeep(val)
+        this.calMainData(val)
       }
     },
-    mainData (val, oldVal) {
-      if (oldVal.length !== 0) this.$emit('change', val)
+    mainData (val) {
+      this.calMainData(val)
     }
   },
-  method: {
-    /**
-     * calculate master production schedule
-     * @param {number[][]} matrix mps data matrix
-     * @param {number[]} TFL timeFenceList an array for mps time fence
-     * @returns an matrix which is calculated correctly
-     */
-    calMPS (matrix, TFL) {
-      for (let r = 3; r < matrix.length; r++) {
-        switch (r) {
-          case 3:// GR
-            calGR(matrix[0], matrix[1], TFL)
-            break
-          case 4:
-        }
-      }
-      return null
+  methods: {
+    calMainData (mainData) {
+      this.mainData = calMPS(
+        this.extractMainData(mainData),
+        [2, 2, 3],
+        160,
+        1)
+    },
+    extractMainData (mainData) {
+      return mainData.reduce((pre, cur) => {
+        pre.push(Object.values(cur).slice(3))
+        return pre
+      }, [])
     }
   }
 }

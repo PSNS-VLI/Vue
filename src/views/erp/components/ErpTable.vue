@@ -22,15 +22,17 @@
         </template>
         <template v-for="item in mainColAndScoped.dataIndexList" :slot="item" slot-scope="text, record, index">
           <div :key="item">
-            <a-input-number
-              v-if="isEdit && record.editable && !frozenList.includes(item)"
-              style="margin: -5px 0"
-              :value="text"
-              @change="e => handleChange(e, record, index, item)"
-            />
-            <template v-else>
-              {{ text }}
-            </template>
+            <keep-alive>
+              <a-input-number
+                v-if="isEdit && record.editable && !frozenList.includes(item)"
+                style="margin: -5px 0"
+                :value="text"
+                @change="e => handleChange(e, record, index, item)"
+              />
+              <template v-else>
+                {{ text }}
+              </template>
+            </keep-alive>
           </div>
         </template>
       </a-table>

@@ -173,16 +173,37 @@ export function getTableDataTem (model, timeFenceArray) {
     timeFenceArray.reduce((pre, cur) => pre + cur)
     ).fill(0).reduce(pre => {
       ++i
-      pre[`zone_${i}`] = ''
+      pre[`zone_${i}`] = 0
       return pre
     }, {})
   data = data.map((name, index) => Object.assign({
     key: index.toString(),
     editable: true,
-    name
+    name,
+    current_zone: 0
   }, zoneKey))
   console.log(data)
   return data
+}
+
+/**
+ * calculate master production schedule
+ * @param {number[][]} matrix mps data matrix
+ * @param {number[]} TFL timeFenceList an array for mps time fence
+ * @param {number} SSA safety stock amount
+ * @param {number} PB production batch
+ * @param {number} LT lead time
+ * @returns an matrix which is calculated correctly
+ */
+export function calMPS (matrix, TFL, SSA, PB, LT) {
+  matrix[3] = calGR(matrix[0], matrix[1], TFL)
+  matrix[4] = calInitPAB(matrix[4], matrix[2], matrix[3])
+  matrix[5] = calNR(matrix[4], SSA)
+  matrix[6] = calPORece(matrix[5], PB)
+  matrix[7] = calPAB(matrix[7], matrix[2], matrix[3], matrix[6])
+  matrix[8] = calPORele(matrix[6], LT)
+  matrix[9] = calATP(matrix[6], matrix[2], matrix[1])
+  return matrix
 }
 
 /**
@@ -196,13 +217,11 @@ export function getTableDataTem (model, timeFenceArray) {
 export function calGR (PVList, OVList, TFL, CT = 1) {
   const GRList = initArrayZero(PVList.length)
   for (CT; CT < PVList.length; CT++) {
-    let v = 0
-    CT <= TFL[0]
-    ? v = PVList[CT]
+    GRList[CT] = CT <= TFL[0]
+    ? PVList[CT]
     : CT <= TFL[2]
-      ? v = Math.max(PVList[CT], OVList[CT])
-      : v = OVList[CT]
-    GRList[CT] = v
+      ? Math.max(PVList[CT], OVList[CT])
+      : OVList[CT]
   }
   return GRList
 }
@@ -216,11 +235,10 @@ export function calGR (PVList, OVList, TFL, CT = 1) {
  * @returns {number[]} an array of initial projected available balance
  */
 export function calInitPAB (IPABList, STARList, GRList, CT = 1) {
-  const PABList = initArrayZero(IPABList.length)
-  for (CT = 2; CT < STARList.length; CT++) {
-    PABList[CT] = IPABList[CT - 1] + STARList[CT] - GRList[CT]
+  for (CT; CT < IPABList.length; CT++) {
+    IPABList[CT] = IPABList[CT - 1] + STARList[CT] - GRList[CT]
   }
-  return PABList
+  return IPABList
 }
 
 /**
@@ -233,9 +251,7 @@ export function calInitPAB (IPABList, STARList, GRList, CT = 1) {
 export function calNR (IPABList, SSA, CT = 1) {
   const NRList = initArrayZero(IPABList.length)
   for (CT; CT < IPABList.length; CT++) {
-    let v = 0
-    IPABList[CT] >= SSA ? v = 0 : v = (SSA - IPABList[CT])
-    NRList[CT] = v
+    NRList[CT] = IPABList[CT] >= SSA ? 0 : SSA - IPABList[CT]
   }
   return NRList
 }
@@ -257,6 +273,7 @@ export function calPORece (NRList, PB, CT = 1) {
     }
     POReceList[CT] = n * PB
   }
+  return POReceList
 }
 
 /**
@@ -264,15 +281,14 @@ export function calPORece (NRList, PB, CT = 1) {
  * @param {number[]} PABList previous projected availabled balance
  * @param {number[]} STARList schedule the amount received
  * @param {number[]} GRList gross requirement
- * @param {number[]} PORList planned order receipts
+ * @param {number[]} POReceList planned order receipts
  * @param {number} [CT=1] current time zone index
  */
-export function alPAB (PABList, STARList, GRList, PORList, CT = 1) {
-  const _PABlist = initArrayZero(PABList.length)
+export function calPAB (PABList, STARList, GRList, POReceList, CT = 1) {
   for (CT; CT < PABList.length; CT++) {
-    _PABlist[CT] = PABList[CT - 1] + STARList[CT] - GRList[CT] + PORList[CT]
+    PABList[CT] = PABList[CT - 1] + STARList[CT] - GRList[CT] + POReceList[CT]
   }
-  return _PABlist
+  return PABList
 }
 
 /**
@@ -282,11 +298,10 @@ export function alPAB (PABList, STARList, GRList, PORList, CT = 1) {
  * @param {number} [CT=1] current time zone index
  * @returns {number[]} TODO
  */
-export function alPORele (POReceList, LT, CT = 1) {
+export function calPORele (POReceList, LT, CT = 1) {
   const POReleList = initArrayZero(POReceList.length)
-  while (CT < POReceList.length) {
-    if (LT + CT < POReceList.length) POReleList[CT] = POReceList[LT + CT]
-    CT++
+  for (CT; CT < POReceList.length; CT++) {
+    POReleList[CT] = LT + CT < POReceList.length ? POReceList[LT + CT] : 0
   }
   return POReleList
 }
@@ -304,13 +319,12 @@ export function calATP (POReceList, STARList, OVList, CT = 1) {
   for (CT; CT < POReceList.length; CT++) {
     let i = CT
     let ATP = POReceList[CT] + STARList[CT]
-    for (i; i < OVList.length; i++) if (POReceList.length > 0) break
-    for (i; i > CT + 1; i--) ATP -= OVList[i - 1]
+    for (i; i < OVList.length; i++) if (POReceList[i] > 0) { break } else { ATP -= OVList[i] }
     ATPList[CT] = ATP
   }
   return ATPList
 }
 
 export function initArrayZero (length) {
-  return Array(length).map(() => 0)
+  return Array(length).fill(0)
 }
