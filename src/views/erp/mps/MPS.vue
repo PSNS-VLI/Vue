@@ -67,16 +67,32 @@ export default {
   },
   methods: {
     calMainData (mainData) {
-      this.mainData = calMPS(
+      this.mainData = this.inflateMainData(
+        mainData,
+        calMPS(
         this.extractMainData(mainData),
         [2, 2, 3],
         160,
         1)
+      )
     },
     extractMainData (mainData) {
       return mainData.reduce((pre, cur) => {
         pre.push(Object.values(cur).slice(3))
         return pre
+      }, [])
+    },
+    inflateMainData (mainData, matrix) {
+      return mainData.reduce((pre, cur, index) => {
+        pre.push(Object.assign(
+          {},
+          cur,
+          matrix[index].reduce((pre, cur, index) => {
+            pre[index === 0 ? 'current_zone' : `zone_${index}`] = cur
+            return pre
+          }, {})
+          ))
+          return pre
       }, [])
     }
   }
