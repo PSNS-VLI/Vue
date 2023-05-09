@@ -4,7 +4,9 @@ import cloneDeep from 'lodash.clonedeep'
 import {
   zoneList,
   mpsTableColumns,
-  mpsTableData
+  mrpTableColumns,
+  mpsTableData,
+  mrpTableData
 } from '@/config/erp.config'
 
 /**
@@ -140,20 +142,36 @@ export function whoHasChild (data, childKey, notTree, currentKey, parentKey) {
 export function getTableColumnsTem (model, timeFenceArray) {
   let columns
   let i = 0
-  if (model === 'mps') {
-    columns = mpsTableColumns
-  }
-  columns = columns.concat(
-    timeFenceArray.slice(0, zoneList.length).map(
-      (fence, index) => ({
-        title: zoneList[index],
-        children: Array(fence).fill(0).map(_ => ({
+  switch (model) {
+    case 'mps':
+      columns = mpsTableColumns.concat(
+        timeFenceArray.slice(0, zoneList.length).map(
+          (fence, index) => ({
+            title: zoneList[index],
+            children: initArrayZero(fence).map(_ => ({
+              title: (++i).toString(),
+              dataIndex: `zone_${i}`
+            }))
+          })
+        )
+      )
+      break
+    case 'mrp':
+      columns = mrpTableColumns.concat(
+        initArrayZero(
+          timeFenceArray.reduce((pre, cur) => pre + cur)
+        ).map((_, i) => ({
           title: (++i).toString(),
           dataIndex: `zone_${i}`
         }))
-      })
-    )
-  )
+      )
+      break
+    case 'crp':
+      columns = []
+      break
+    default:
+      columns = []
+  }
   return columns
 }
 
@@ -161,17 +179,19 @@ export function getTableColumnsTem (model, timeFenceArray) {
  * generate main data template for erp table
  * @param {string} model tag of which module to be processed
  * @param {number[]} timeFenceArray  time fence array
+ * @param {Object} params extra parameters
  * @returns {Object[]}
  */
-export function getTableDataTem (model, timeFenceArray) {
+export function getTableDataTem (model, timeFenceArray, params) {
+  params = params || {}
   let data
   let i = 0
   if (model === 'mps') {
     data = mpsTableData
   }
-  const zoneKey = Array(
+  const zoneKey = initArrayZero(
     timeFenceArray.reduce((pre, cur) => pre + cur)
-    ).fill(0).reduce(pre => {
+    ).reduce(pre => {
       ++i
       pre[`zone_${i}`] = 0
       return pre
@@ -179,7 +199,7 @@ export function getTableDataTem (model, timeFenceArray) {
   data = data.map((name, index) => Object.assign({
     key: index.toString(),
     editable: true,
-    name,
+    name: name.replace(),
     current_zone: 0
   }, zoneKey))
   console.log(data)
