@@ -16,6 +16,16 @@ const mrpTableColumns = [{
   title: '当期',
   dataIndex: 'current_zone'
 }]
+const crpTableColumns = [{
+  title: '物料',
+  dataIndex: 'name'
+}, {
+  title: '工作中心',
+  dataIndex: 'department_center'
+}, {
+  title: '当期',
+  dataIndex: 'current_zone'
+}]
 const mpsTableData = [
   '预测量',
   '订单量',
@@ -29,7 +39,7 @@ const mpsTableData = [
   'ATP'
 ]
 const mrpTableData = [
-  '{}计划投入量',
+  '{parent}计划投入量',
   '计划接收量',
   '毛需求量',
   'PAB初值',
@@ -43,6 +53,7 @@ export {
   zoneList,
   mpsTableColumns,
   mrpTableColumns,
+  crpTableColumns,
   mpsTableData,
   mrpTableData
 }

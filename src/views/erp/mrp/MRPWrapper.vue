@@ -23,12 +23,20 @@
       </div>
     </a-card>
     <a-card :bordered="false">
-      <MRP />
+      <MRP
+        :sideColumns="sideColumns"
+        :mainColumns="mainColumns"
+        :tableData="tableData"/>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
+import {
+  getTableColumnsTem,
+  getTableDataTem
+} from '@/utils/erp'
+
 import MRP from './MRP.vue'
 
 export default {
@@ -49,13 +57,45 @@ export default {
       value: 2,
       name: '尾阶展开'
     }]
+    this.sideColumns = [{
+      title: '计划接收量'
+    }, {
+      title: '80'
+    }, {
+      title: '提前期'
+    }, {
+      title: '1'
+    }, {
+      title: '底层码'
+    }, {
+      title: '1'
+    }, {
+      title: '当期PAB'
+    }, {
+      title: '20'
+    }, {
+      title: '安全库存'
+    }, {
+      title: '20'
+    }, {
+      title: '批量'
+    }, {
+      title: '100'
+    }]
     return {
       // show param
       showParam: {
         explosionRule: 0,
         defaultRule: 0
-      }
+      },
+      // mrp data
+      mainColumns: [],
+      tableData: []
     }
+  },
+  created () {
+    this.mainColumns = getTableColumnsTem('mrp', [2, 2, 3])
+    this.tableData = getTableDataTem('mrp', [2, 2, 3], { field: { parent: 'ZXC' } })
   },
   methods: {
     handleRuleChange (e) {

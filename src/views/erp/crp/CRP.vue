@@ -12,11 +12,11 @@
     </div>
     <div class="table-wrapper">
       <ErpTable
-        title="PA26-50 的MRP"
+        title="PA26-50 的CRP"
+        :hasSide="false"
         :isEdit="isEdit"
         :frozenList="frozenList"
         :mainColumns="mainColumns"
-        :sideColumns="sideColumns"
         v-model="mainData"/>
     </div>
   </a-card>
@@ -32,10 +32,6 @@ export default {
     ErpTable
   },
   props: {
-    sideColumns: {
-      type: Array,
-      default: () => []
-    },
     mainColumns: {
       type: Array,
       default: () => []
@@ -43,10 +39,13 @@ export default {
     tableData: {
       type: Array,
       default: () => []
+    },
+    frozenList: {
+      type: Array,
+      default: () => ['name']
     }
   },
   data () {
-    this.frozenList = ['name']
     return {
       mainData: [],
       isEdit: false

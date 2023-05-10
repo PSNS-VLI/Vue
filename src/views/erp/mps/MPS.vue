@@ -100,7 +100,5 @@ export default {
 </script>
 
 <style scoped>
-.table-operation {
-  margin-bottom: 20px;
-}
+@import url('../style/common.css');
 </style>

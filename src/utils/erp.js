@@ -5,6 +5,7 @@ import {
   zoneList,
   mpsTableColumns,
   mrpTableColumns,
+  crpTableColumns,
   mpsTableData,
   mrpTableData
 } from '@/config/erp.config'
@@ -157,20 +158,23 @@ export function getTableColumnsTem (model, timeFenceArray) {
       )
       break
     case 'mrp':
-      columns = mrpTableColumns.concat(
-        initArrayZero(
-          timeFenceArray.reduce((pre, cur) => pre + cur)
-        ).map((_, i) => ({
-          title: (++i).toString(),
-          dataIndex: `zone_${i}`
-        }))
-      )
+      columns = genCol(mrpTableColumns)
       break
     case 'crp':
-      columns = []
+      columns = genCol(crpTableColumns)
       break
     default:
       columns = []
+  }
+  function genCol (col) {
+    return col.concat(
+      initArrayZero(
+        timeFenceArray.reduce((pre, cur) => pre + cur)
+      ).map((_, i) => ({
+        title: (++i).toString(),
+        dataIndex: `zone_${i}`
+      }))
+    )
   }
   return columns
 }
@@ -186,8 +190,18 @@ export function getTableDataTem (model, timeFenceArray, params) {
   params = params || {}
   let data
   let i = 0
-  if (model === 'mps') {
-    data = mpsTableData
+  switch (model) {
+    case 'mps':
+      data = mpsTableData
+      break
+    case 'mrp':
+      data = mrpTableData
+      break
+    case 'crp':
+      data = params.tableData || []
+      break
+    default:
+      data = []
   }
   const zoneKey = initArrayZero(
     timeFenceArray.reduce((pre, cur) => pre + cur)
@@ -199,9 +213,12 @@ export function getTableDataTem (model, timeFenceArray, params) {
   data = data.map((name, index) => Object.assign({
     key: index.toString(),
     editable: true,
-    name: name.replace(),
-    current_zone: 0
-  }, zoneKey))
+    name: params.field && name.match(/\{(\w*)\}/)
+      ? name.replace(/^\{(\w*)\}/, params.field[name.match(/\{(\w*)\}/)[1]])
+      : name
+  }, params.keyFn && typeof params.keyFn === 'function'
+  ? params.keyFn(name, index)
+  : {}, { current_zone: 0 }, zoneKey))
   console.log(data)
   return data
 }

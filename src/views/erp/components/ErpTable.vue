@@ -29,9 +29,9 @@
                 :value="text"
                 @change="e => handleChange(e, record, index, item)"
               />
-              <template v-else>
+              <div v-else>
                 {{ text }}
-              </template>
+              </div>
             </keep-alive>
           </div>
         </template>

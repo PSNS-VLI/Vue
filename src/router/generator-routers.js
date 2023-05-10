@@ -2,11 +2,10 @@
 import * as loginService from '@/api/login'
 // eslint-disable-next-line
 import { BasicLayout, BlankLayout, PageView, RouteView } from '@/layouts'
-import { forEach } from 'core-js/es6/array'
 
 // 前端路由表 (基于动态)
 const constantRouterComponents = {
-  // 基础页面 layout 必须引入
+  // basci layout
   BasicLayout: BasicLayout,
   BlankLayout: BlankLayout,
   RouteView: RouteView,
@@ -15,7 +14,7 @@ const constantRouterComponents = {
   '404': () => import(/* webpackChunkName: "error" */ '@/views/exception/404'),
   '500': () => import(/* webpackChunkName: "error" */ '@/views/exception/500'),
 
-  // 你需要动态引入的页面组件
+  // dynamic components
   Workplace: () => import('@/views/dashboard/Workplace'),
   Analysis: () => import('@/views/dashboard/Analysis'),
 
@@ -56,14 +55,14 @@ const constantRouterComponents = {
   // 'TestWork': () => import(/* webpackChunkName: "TestWork" */ '@/views/dashboard/TestWork')
 }
 
-// 前端未找到页面路由（固定不用改）
+// not found components
 const notFoundRouter = {
   path: '*',
   redirect: '/404',
   hidden: true
 }
 
-// 根级菜单 PID=0
+// root menu PID=0
 const rootRouter = {
   key: '',
   name: 'index',
@@ -75,10 +74,6 @@ const rootRouter = {
   },
   children: []
 }
-
-// export const generatorStaticRouter = () => {
-
-// }
 
 /**
  * 动态生成菜单
@@ -98,10 +93,10 @@ export const generatorDynamicRouter = token => {
         listToTree(result, childrenNav, 0)
         rootRouter.children = childrenNav
         menuNav.push(rootRouter)
-        
+
         console.log('menuNav', menuNav)
         const routers = generator(menuNav)
-        
+
         routers.push(notFoundRouter)
         console.log('routers', routers)
         resolve(routers)
@@ -114,7 +109,6 @@ export const generatorDynamicRouter = token => {
 
 /**
  * 格式化树形结构数据 生成 vue-router 层级路由表
- *
  * @param routerMap
  * @param parent
  * @returns {*}
@@ -172,20 +166,16 @@ export const generator = (routerMap, parent) => {
  */
 const listToTree = (list, tree, parentId) => {
   list.forEach(item => {
-    // 判断是否为父级菜单
     if (item.parentId === parentId) {
       const child = {
         ...item,
         key: item.key || item.name,
         children: []
       }
-      // 迭代 list， 找到当前菜单相符合的所有子菜单
       listToTree(list, child.children, item.id)
-      // 删掉不存在 children 值的属性
       if (child.children.length <= 0) {
         delete child.children
       }
-      // 加入到树中
       tree.push(child)
     }
   })
