@@ -1,11 +1,7 @@
 // eslint-disable-next-line
-import { UserLayout, BasicLayout, BlankLayout } from '@/layouts'
+import { UserLayout, BasicLayout, BlankLayout, GameLayout } from '@/layouts'
 import { bxAnaalyse } from '@/core/icons'
 
-const RouteView = {
-  name: 'RouteView',
-  render: h => h('router-view')
-}
 /**
  * Static Routes
  * @type { *[] }
@@ -23,7 +19,7 @@ export const asyncRouterMap = [
         path: '/dashboard',
         name: 'dashboard',
         redirect: '/dashboard/workplace',
-        component: RouteView,
+        component: BlankLayout,
         meta: { title: 'menu.dashboard', keepAlive: true, icon: bxAnaalyse, permission: ['dashboard'] },
         children: [
           {
@@ -39,7 +35,7 @@ export const asyncRouterMap = [
       {
         path: '/erp',
         name: 'erp',
-        component: RouteView,
+        component: BlankLayout,
         redirect: '/erp/bom',
         meta: { title: 'menu.erp', icon: 'table', permission: ['erp'] },
         children: [
@@ -78,7 +74,7 @@ export const asyncRouterMap = [
       {
         path: '/game',
         name: 'game',
-        component: RouteView,
+        component: BlankLayout,
         redirect: '/game/lobby',
         meta: { title: 'menu.game', icon: 'compass', permission: ['game'] },
         children: [{
@@ -92,7 +88,7 @@ export const asyncRouterMap = [
       // Account
       {
         path: '/account',
-        component: RouteView,
+        component: BlankLayout,
         redirect: '/account/center',
         name: 'account',
         hidden: true,
@@ -172,10 +168,23 @@ export const asyncRouterMap = [
  */
 export const constantRouterMap = [
   {
+    path: '/gaming',
+    name: 'gaming',
+    component: GameLayout,
+    redirect: '/',
+    children: [
+      {
+        path: '/gaming/general/:id',
+        name: 'general-game',
+        component: () => import('@/views/game/GeneralGameLoader'),
+        props: true
+      }
+    ]
+  },
+  {
     path: '/user',
     component: UserLayout,
     redirect: '/user/login',
-    hidden: true,
     children: [
       {
         path: 'login',

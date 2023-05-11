@@ -1,7 +1,19 @@
 import UserLayout from './UserLayout'
-import BlankLayout from './BlankLayout'
 import BasicLayout from './BasicLayout'
+import GameLayout from './GameLayout'
 import RouteView from './RouteView'
 import PageView from './PageView'
 
-export { UserLayout, BasicLayout, BlankLayout, RouteView, PageView }
+const BlankLayout = {
+  name: 'RouteView',
+  render: h => h('router-view')
+}
+
+export {
+  UserLayout,
+  BasicLayout,
+  GameLayout,
+  BlankLayout,
+  RouteView,
+  PageView
+}
