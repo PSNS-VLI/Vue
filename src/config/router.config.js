@@ -41,37 +41,52 @@ export const asyncRouterMap = [
         name: 'erp',
         component: RouteView,
         redirect: '/erp/bom',
-        meta: { title: 'menu.erp', icon: 'table', permission: ['table'] },
+        meta: { title: 'menu.erp', icon: 'table', permission: ['erp'] },
         children: [
           {
             path: '/erp/bom',
             name: 'erp-bom',
             hideChildrenInMenu: true,
             component: () => import('@/views/erp/bom/BOMWrapper'),
-            meta: { title: 'menu.erp.bom', keepAlive: true, permission: ['table'] }
+            meta: { title: 'menu.erp.bom', keepAlive: true, permission: ['erp'] }
           },
           {
             path: '/erp/mps',
             name: 'erp-mps',
             hideChildrenInMenu: true,
             component: () => import('@/views/erp/mps/MPSWrapper'),
-            meta: { title: 'menu.erp.mps', keepAlive: true, permission: ['table'] }
+            meta: { title: 'menu.erp.mps', keepAlive: true, permission: ['erp'] }
           },
           {
             path: '/erp/mrp',
             name: 'erp-mrp',
             hideChildrenInMenu: true,
             component: () => import('@/views/erp/mrp/MRPWrapper'),
-            meta: { title: 'menu.erp.mrp', keepAlive: true, permission: ['table'] }
+            meta: { title: 'menu.erp.mrp', keepAlive: true, permission: ['erp'] }
           },
           {
             path: '/erp/crp',
             name: 'erp-crp',
             hideChildrenInMenu: true,
             component: () => import('@/views/erp/crp/CRPWrapper'),
-            meta: { title: 'menu.erp.crp', keepAlive: true, permission: ['table'] }
+            meta: { title: 'menu.erp.crp', keepAlive: true, permission: ['erp'] }
           }
         ]
+      },
+
+      // GAME
+      {
+        path: '/game',
+        name: 'game',
+        component: RouteView,
+        redirect: '/game/lobby',
+        meta: { title: 'menu.game', icon: 'compass', permission: ['game'] },
+        children: [{
+          path: '/game/lobby',
+          name: 'game-lobby',
+          component: () => import('@/views/game/GameLobby'),
+          meta: { title: 'menu.game.lobby', keepAlive: true, permission: ['game'] }
+        }]
       },
 
       // Account

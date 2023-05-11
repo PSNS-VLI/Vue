@@ -10,6 +10,8 @@ export default {
     'menu.erp.mps': '主生产计划',
     'menu.erp.mrp': '物料需求计划',
     'menu.erp.crp': '能力需求计划',
+    'menu.game': '游戏中心',
+    'menu.game.lobby': '游戏大厅',
     'menu.profile': '详情页',
     'menu.profile.basic': '基础详情页',
     'menu.profile.advanced': '高级详情页',
