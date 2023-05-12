@@ -67,7 +67,7 @@
       <div class="ant-pro-pages-list-projects-cardList">
         <a-list :loading="loading" :data-source="data" :grid="{ gutter: 24, xl: 4, lg: 3, md: 3, sm: 2, xs: 1 }">
           <a-list-item slot="renderItem" slot-scope="item">
-            <a-card class="ant-pro-pages-list-projects-card" hoverable>
+            <a-card class="ant-pro-pages-list-projects-card" hoverable @click="onClickCard(item)">
               <img slot="cover" :src="item.cover" :alt="item.title" />
               <a-card-meta :title="item.title">
                 <template slot="description">
@@ -136,6 +136,21 @@ export default {
         console.log('res', res)
         this.data = res.result
         this.loading = false
+      })
+    },
+    onClickCard (cardItem) {
+      this.$router.push({
+        name: 'general-game',
+        params: { id: cardItem.id.toString() }
+      }, () => {
+        document.querySelector('html').requestFullscreen().then(() => {
+          this.$notification.info({
+            message: '已开启游戏模式',
+            description: '您已经进入游戏模式，按ESC即可退出',
+            placement: 'topLeft',
+            top: '100px'
+          })
+        })
       })
     }
   }

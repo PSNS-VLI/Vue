@@ -23,7 +23,13 @@ export default {
       immediate: true,
       handler (val) {
         this.component = val
-        ? () => import(`@/games/${val}/index.vue`).catch()
+        ? () => {
+          try {
+            return import(`@/games/${val}/index.vue`)
+          } catch {
+            return null
+          }
+        }
         : null
       }
     }

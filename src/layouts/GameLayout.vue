@@ -10,23 +10,50 @@
       <p>Some contents...</p>
       <p>Some contents...</p>
     </a-drawer>
+    <HoverBall />
     <router-view />
   </div>
 </template>
 
 <script>
+import HoverMenu from '@/components/HoverBall'
+
 export default {
   name: 'GameLayout',
-  props: {},
+  components: {
+    HoverMenu
+  },
   data () {
     return {
-        visible: false
+      visible: false
     }
   },
-  mounted () {
-    this.$refs.wrapper
-        .requestFullscreen()
-        .then(res => this.$message.info('您已经进入游戏模式，ESC退出'))
+  created () {
+    window.addEventListener('beforeunload', this.beforeUnload)
+  },
+  methods: {
+    beforeUnload (e) {
+      e.preventDefault()
+      e.returnValue = ''
+    }
+  },
+  beforeRouteLeave (to, from, next) {
+    this.$confirm({
+      title: '确定退出游戏？',
+      content: '退出游戏后将会丢失游戏进度并可能受到处罚！',
+      okText: '退出',
+      okType: 'danger',
+      cancelText: '取消',
+      onOk () {
+        next()
+      },
+      onCancel () {
+        next(false)
+      }
+    })
+  },
+  beforeDestroy () {
+    window.removeEventListener('beforeunload', this.beforeUnload)
   }
 }
 </script>
