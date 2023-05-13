@@ -2,7 +2,7 @@
   <div class="top-bar" :class="'player-' + currentPlayerIndex">
     <div class="player p0">{{ players[0].name }}</div>
     <div class="turn-counter">
-      <img class="arrow" src="svg/turn.svg" />
+      <img class="arrow" :src="loadSVG('turn')" />
       <div class="turn">Turn {{ turn }}</div>
     </div>
     <div class="player p1">{{ players[1].name }}</div>
@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import { loadSVG } from '../../utils/utils.js'
+
 export default {
   props: {
     players: {
@@ -25,6 +27,7 @@ export default {
       default: 1
     }
   },
+  mixins: [loadSVG],
   created () {
     console.log(this.players, this.currentPlayerIndex, this.turn)
   }

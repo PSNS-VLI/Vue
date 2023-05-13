@@ -11,7 +11,7 @@
 <script>
 import getLastPlayedCard from '../../utils/utils.js'
 
-import Card from './card.vue'
+import Card from './Card.vue'
 
 export default {
   components: {

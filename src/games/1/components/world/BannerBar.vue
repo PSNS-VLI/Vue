@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import TWEEN from '../../assets/js/Tween'
+
 export default {
   props: {
     color: {
@@ -29,9 +31,7 @@ export default {
   watch: {
     targetHeight (newValue, oldValue) {
       const vm = this
-      // eslint-disable-next-line no-undef
       new TWEEN.Tween({ value: oldValue })
-      // eslint-disable-next-line no-undef
         .easing(TWEEN.Easing.Cubic.InOut)
         .to({ value: newValue }, 500)
         .onUpdate(function () {

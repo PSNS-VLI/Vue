@@ -1,12 +1,13 @@
 <template>
   <div class="castle" :class="'player-' + index">
-    <img class="building" :src="'svg/castle' + index + '.svg'" />
-    <img class="ground" :src="'svg/ground' + index + '.svg'" />
+    <img class="building" :src="loadSVG('castle' + index)" />
+    <img class="ground" :src="loadSVG('ground' + index)" />
     <castle-banners :player="player" />
   </div>
 </template>
 
 <script>
+import { loadSVG } from '../../utils/utils.js'
 import CastleBanners from './CastleBanners.vue'
 
 export default {
@@ -22,7 +23,8 @@ export default {
       type: Number,
       default: 0
     }
-  }
+  },
+  mixins: [loadSVG]
 }
 </script>
 

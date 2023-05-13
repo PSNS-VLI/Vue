@@ -1,17 +1,21 @@
 <template>
   <div class="cloud" :class="'cloud-' + type" :style="style">
-    <img :src="'svg/cloud' + type + '.svg'" @load="initPosition" />
+    <img :src="loadSVG('cloud' + type)" @load="initPosition" />
   </div>
 </template>
 
 <script>
+import { loadSVG } from '../../utils/utils.js'
+import TWEEN from '../../assets/js/Tween'
+
 export default {
   props: {
     type: {
-      type: String,
-      default: ''
+      type: Number,
+      default: 0
     }
   },
+  mixins: [loadSVG],
   data () {
     this.cloudAnimationDurations = {
       min: 10000,
@@ -49,7 +53,6 @@ export default {
 
       // Random position
       const top = Math.random() * (window.innerHeight * 0.3)
-      // eslint-disable-next-line no-undef
       new TWEEN.Tween({ value: -width })
         .to({ value: window.innerWidth }, animationDuration)
         .delay(delay)

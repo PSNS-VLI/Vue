@@ -61,11 +61,15 @@ var state = {
   canPlay: false
 }
 
-export default {
+function getCardUid () {
+  return cardUid++
+}
+
+export {
   maxHealth,
   maxFood,
   handSize,
-  cardUid,
+  getCardUid,
   currentPlayingCard,
   state
 }

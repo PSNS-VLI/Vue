@@ -35,12 +35,12 @@
         </overlay>
       </transition>
     </div>
-    <banner-bar />
   </div>
 </template>
 
 <script>
-import state from './state'
+import TWEEN from './assets/js/Tween.js'
+import { state } from './state/state.js'
 import {
   getWorldRatio
 } from './utils/utils.js'
@@ -57,13 +57,13 @@ import {
   Overlay,
   OverlayContentGameOver,
   OverlayContentLastPlay,
-  OverlayContentPlayerTurn,
-  BannerBar
-} from 'components/ui'
+  OverlayContentPlayerTurn
+} from './components/ui'
 import {
   Castle,
-  Cloud
- } from 'components/world'
+  Cloud,
+  BannerBar
+ } from './components/world'
 
 export default {
   components: {
@@ -77,13 +77,44 @@ export default {
     'castle': Castle,
     'cloud': Cloud
   },
-  data: state,
+  data () {
+    this.overlayCloseHandlers = {
+      'player-turn' () {
+        if (state.turn > 1) {
+          state.activeOverlay = 'last-play'
+        } else {
+          newTurn()
+        }
+      },
+      'last-play' () {
+        newTurn()
+      },
+      'game-over' () {
+        document.location.reload()
+      }
+    }
+    return state
+  },
   computed: {
     cssClass () {
       return {
         'can-play': this.canPlay
       }
     }
+  },
+  created () {
+    console.log(this.$data)
+    // Window resize handling
+    window.addEventListener('resize', this.handleResize)
+    // Tween.js
+    requestAnimationFrame(this.animate)
+    state.activeOverlay = 'player-turn'
+  },
+  mounted () {
+    beginGame()
+  },
+  destroyed () {
+    window.removeEventListener('resize', this.handleResize)
   },
   methods: {
     handlePlayCard (card) {
@@ -93,47 +124,21 @@ export default {
       applyCard()
     },
     handleOverlayClose () {
-      overlayCloseHandlers[this.activeOverlay]()
+      this.overlayCloseHandlers[this.activeOverlay]()
+    },
+    handleResize () {
+      state.worldRatio = getWorldRatio()
+    },
+    animate (time) {
+      requestAnimationFrame(this.animate)
+      // eslint-disable-next-line no-undef
+      TWEEN.update(time)
     }
-  },
-  mounted () {
-    beginGame()
   }
-}
-var overlayCloseHandlers = {
-  'player-turn' () {
-    if (state.turn > 1) {
-      state.activeOverlay = 'last-play'
-    } else {
-      newTurn()
-    }
-  },
-
-  'last-play' () {
-    newTurn()
-  },
-
-  'game-over' () {
-    document.location.reload()
-  }
-}
-
-// Window resize handling
-window.addEventListener('resize', () => {
-  state.worldRatio = getWorldRatio()
-})
-
-// Tween.js
-requestAnimationFrame(animate)
-
-function animate (time) {
-  requestAnimationFrame(animate)
-  // eslint-disable-next-line no-undef
-  TWEEN.update(time)
 }
 
 </script>
-<script src="assets/js/Tween.js"></script>
 
 <style lang="less" scoped>
+@import url('./style/transitions.css');
 </style>

@@ -1,13 +1,15 @@
 <template>
   <div class="card" :class="'type-' + def.type" @click="play">
     <div class="title">{{ def.title }}</div>
-    <img class="separator" src="svg/card-separator.svg" />
+    <img class="separator" :src="loadSVG('card-separator')" />
     <div class="description"><div v-html="def.description"></div></div>
     <div class="note" v-if="def.note"><div v-html="def.note"></div></div>
   </div>
 </template>
 
 <script>
+import { loadSVG } from '../../utils/utils.js'
+
 export default {
   props: {
     def: {
@@ -15,6 +17,7 @@ export default {
       default: () => ({})
     }
   },
+  mixins: [loadSVG],
   methods: {
     play () {
       this.$emit('play')

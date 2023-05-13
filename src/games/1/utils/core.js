@@ -2,13 +2,13 @@ import {
   maxHealth,
   maxFood,
   handSize,
-  cardUid,
+  getCardUid,
   currentPlayingCard,
   state
-} from '../state/state'
+} from '../state/state.js'
 import {
   cards
-} from '../state/cards'
+} from '../state/cards.js'
 
 // GAME
 // Pile
@@ -28,7 +28,7 @@ export function drawCard () {
       state.drawPile[k]--
       return {
         id: k,
-        uid: cardUid++,
+        uid: getCardUid(),
         def: cards[k]
       }
     }
@@ -102,8 +102,6 @@ export function isOnePlayerDead () {
 }
 
 // Game Play
-state.activeOverlay = 'player-turn'
-
 export function beginGame () {
   state.players.forEach(drawInitialHand)
 }
