@@ -1,3 +1,11 @@
+import {
+  getWorldRatio
+} from '../utils/utils.js'
+
+import {
+  pile
+} from './cards.js'
+
 // Some usefull variables
 var maxHealth = 10
 var maxFood = 10
@@ -22,7 +30,7 @@ var state = {
       skippedTurn: false,
       hand: [],
       lastPlayedCardId: null,
-      dead: false,
+      dead: false
     },
     {
       name: 'William the Bald',
@@ -32,8 +40,8 @@ var state = {
       skippedTurn: false,
       hand: [],
       lastPlayedCardId: null,
-      dead: false,
-    },
+      dead: false
+    }
   ],
   currentPlayerIndex: Math.round(Math.random()),
   get currentPlayer () {
@@ -50,5 +58,14 @@ var state = {
   },
   drawPile: pile,
   discardPile: {},
-  canPlay: false,
+  canPlay: false
+}
+
+export default {
+  maxHealth,
+  maxFood,
+  handSize,
+  cardUid,
+  currentPlayingCard,
+  state
 }

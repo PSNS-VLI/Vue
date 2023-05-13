@@ -8,7 +8,7 @@ let cards = [
     play (player, opponent) {
       player.food -= 1
       opponent.health -= 1
-    },
+    }
   },
   {
     id: 'catapult',
@@ -18,7 +18,7 @@ let cards = [
     play (player, opponent) {
       player.food -= 2
       opponent.health -= 2
-    },
+    }
   },
   {
     id: 'trebuchet',
@@ -30,7 +30,7 @@ let cards = [
       player.food -= 3
       player.health -= 1
       opponent.health -= 4
-    },
+    }
   },
   {
     id: 'archers',
@@ -41,7 +41,7 @@ let cards = [
     play (player, opponent) {
       player.food -= 3
       opponent.health -= 3
-    },
+    }
   },
   {
     id: 'knighthood',
@@ -52,7 +52,7 @@ let cards = [
     play (player, opponent) {
       player.food -= 7
       opponent.health -= 5
-    },
+    }
   },
   {
     id: 'repair',
@@ -84,7 +84,7 @@ let cards = [
     play (player, opponent) {
       player.skipTurn = true
       player.food += 5
-    },
+    }
   },
   {
     id: 'granary',
@@ -104,7 +104,7 @@ let cards = [
     play (player, opponent) {
       player.food -= 1
       opponent.food -= 3
-    },
+    }
   },
   {
     id: 'fireball',
@@ -116,7 +116,7 @@ let cards = [
       player.health -= 3
       player.skipTurn = true
       opponent.health -= 5
-    },
+    }
   },
   {
     id: 'chapel',
@@ -126,7 +126,7 @@ let cards = [
     note: 'Pray in the chapel, and hope someone will listen.',
     play (player, opponent) {
       // Nothing happens...
-    },
+    }
   },
   {
     id: 'curse',
@@ -138,7 +138,7 @@ let cards = [
       player.health -= 3
       opponent.food -= 3
       opponent.health -= 3
-    },
+    }
   },
   {
     id: 'miracle',
@@ -150,8 +150,8 @@ let cards = [
       player.health += 3
       opponent.food += 3
       opponent.health += 3
-    },
-  },
+    }
+  }
 ]
 
 cards = cards.reduce((map, card) => {
@@ -164,7 +164,7 @@ cards = cards.reduce((map, card) => {
   return map
 }, {})
 
-let pile = {
+const pile = {
   pikemen: 4,
   catapult: 4,
   trebuchet: 3,
@@ -178,5 +178,10 @@ let pile = {
   fireball: 2,
   chapel: 2,
   curse: 1,
-  miracle: 1,
+  miracle: 1
+}
+
+export {
+  cards,
+  pile
 }

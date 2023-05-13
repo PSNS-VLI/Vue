@@ -143,7 +143,7 @@ export default {
         name: 'general-game',
         params: { id: cardItem.id.toString() }
       }, () => {
-        document.querySelector('html').requestFullscreen().then(() => {
+        document.documentElement.requestFullscreen().then(() => {
           this.$notification.info({
             message: '已开启游戏模式',
             description: '您已经进入游戏模式，按ESC即可退出',

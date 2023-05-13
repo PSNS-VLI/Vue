@@ -10,13 +10,17 @@
       <p>Some contents...</p>
       <p>Some contents...</p>
     </a-drawer>
-    <HoverBall />
+    <!-- <HoverBall /> -->
+    <HoverMenu
+      @clickMenuItem="onClickMenuItem"
+      :average="true"
+      :menus="menus"/>
     <router-view />
   </div>
 </template>
 
 <script>
-import HoverMenu from '@/components/HoverBall'
+import { HoverMenu } from '@/components/HoverBall'
 
 export default {
   name: 'GameLayout',
@@ -25,7 +29,20 @@ export default {
   },
   data () {
     return {
-      visible: false
+      visible: false,
+      menus: [{
+        title: '退出全屏',
+        icon: 'fullscreen-exit'
+      }, {
+        title: '返回大厅',
+        icon: 'compass'
+      }, {
+        title: '游戏设置',
+        icon: 'setting'
+      }, {
+        title: '交流中心',
+        icon: 'message'
+      }]
     }
   },
   created () {
@@ -35,6 +52,28 @@ export default {
     beforeUnload (e) {
       e.preventDefault()
       e.returnValue = ''
+    },
+    onClickMenuItem (item) {
+      switch (item.title) {
+        case this.menus[0].title:
+          document.exitFullscreen()
+          this.$notification.success({
+            message: '已退出游戏模式',
+            description: '您已经退出游戏模式，消息通知已上线',
+            placement: 'topLeft',
+            top: '100px'
+          })
+          this.$set(this.menus, 0, Object.assign({}, this.menus[0], {
+            title: '进入全屏'
+          }))
+          break
+        case this.menus[1].title:
+          break
+        case this.menus[2].title:
+          break
+        default:
+          break
+      }
     }
   },
   beforeRouteLeave (to, from, next) {
