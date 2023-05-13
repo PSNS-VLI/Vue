@@ -141,4 +141,5 @@ export default {
 
 <style lang="less" scoped>
 @import url('./style/transitions.css');
+@import url('./style/style.css');
 </style>

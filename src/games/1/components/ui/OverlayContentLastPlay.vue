@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import getLastPlayedCard from '../../utils/utils.js'
+import { getLastPlayedCard } from '../../utils/core.js'
 
 import Card from './Card.vue'
 

@@ -4,6 +4,7 @@ import {
   handSize,
   getCardUid,
   currentPlayingCard,
+  setCurrentPlayingCard,
   state
 } from '../state/state.js'
 import {
@@ -109,7 +110,7 @@ export function beginGame () {
 export function playCard (card) {
   if (state.canPlay) {
     state.canPlay = false
-    currentPlayingCard = card
+    setCurrentPlayingCard(card)
 
     // Remove the card from player hand
     const index = state.currentPlayer.hand.indexOf(card)

@@ -65,11 +65,16 @@ function getCardUid () {
   return cardUid++
 }
 
+function setCurrentPlayingCard (card) {
+  currentPlayingCard = card
+}
+
 export {
   maxHealth,
   maxFood,
   handSize,
   getCardUid,
   currentPlayingCard,
+  setCurrentPlayingCard,
   state
 }
