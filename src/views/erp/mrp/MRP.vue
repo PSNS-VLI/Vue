@@ -1,19 +1,9 @@
 <template>
   <a-card :bordered="false">
-    <div class="table-operation">
-      <a-row :gutter="48">
-        <a-col :md="6" :sm="24">
-          <a-button :type="isEdit ? 'default' : 'primary'" icon="edit" @click="isEdit = !isEdit">
-            <template v-if="isEdit">取消编辑</template>
-            <template v-else>编辑</template>
-          </a-button>
-        </a-col>
-      </a-row>
-    </div>
     <div class="table-wrapper">
       <ErpTable
         title="PA26-50 的MRP"
-        :isEdit="isEdit"
+        operation="edit"
         :frozenList="frozenList"
         :mainColumns="mainColumns"
         :sideColumns="sideColumns"
@@ -23,7 +13,9 @@
 </template>
 
 <script>
-import cloneDeep from 'lodash.clonedeep'
+import {
+  calMRP
+} from '@/utils/erp.js'
 
 import ErpTable from '../components/ErpTable.vue'
 
@@ -48,19 +40,48 @@ export default {
   data () {
     this.frozenList = ['name']
     return {
-      mainData: [],
-      isEdit: false
+      mainData: []
     }
   },
   watch: {
     tableData: {
       immediate: true,
       handler (val) {
-        this.mainData = cloneDeep(val)
+        this.calMainData(val)
       }
     }
   },
-  method: {
+  methods: {
+    calMainData (mainData) {
+      console.log(mainData)
+      this.mainData = this.inflateMainData(
+        mainData,
+        calMRP(
+        this.extractMainData(mainData),
+        160,
+        1)
+      )
+      console.log(this.mainData)
+    },
+    extractMainData (mainData) {
+      return mainData.reduce((pre, cur) => {
+        pre.push(Object.values(cur).slice(3))
+        return pre
+      }, [])
+    },
+    inflateMainData (mainData, matrix) {
+      return mainData.reduce((pre, cur, index) => {
+        pre.push(Object.assign(
+          {},
+          cur,
+          matrix[index].reduce((pre, cur, index) => {
+            pre[index === 0 ? 'current_zone' : `zone_${index}`] = cur
+            return pre
+          }, {})
+          ))
+          return pre
+      }, [])
+    }
   }
 }
 </script>

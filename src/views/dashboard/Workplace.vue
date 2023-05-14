@@ -16,7 +16,7 @@
     <template v-slot:extraContent>
       <div class="extra-content">
         <div class="stat-item">
-          <a-statistic title="累计工时" :value="32" suffix="/ h" />
+          <a-statistic title="累计学时" :value="32" suffix="/ h" />
         </div>
         <div class="stat-item">
           <a-statistic title="班级内排名" :value="8" suffix="/ 32" />
@@ -52,7 +52,7 @@
                     </div>
                   </a-card-meta>
                   <div class="project-item">
-                    <a href="/#/">一班一组</a>
+                    <a href="/#/">三班一组</a>
                     <span class="datetime">9小时前</span>
                   </div>
                 </a-card>

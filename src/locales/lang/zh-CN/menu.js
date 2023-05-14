@@ -6,6 +6,7 @@ export default {
     'menu.dashboard.monitor': '监控页',
     'menu.dashboard.workplace': '工作台',
     'menu.erp': '企业资源计划',
+    'menu.erp.config': '全局配置',
     'menu.erp.bom': '物料清单',
     'menu.erp.mps': '主生产计划',
     'menu.erp.mrp': '物料需求计划',

@@ -6,6 +6,7 @@ export default {
     'menu.dashboard.monitor': 'Monitor',
     'menu.dashboard.workplace': 'Workplace',
     'menu.erp': 'Enterprise Resource Planning',
+    'menu.erp.config': 'Enterprise Global Config',
     'menu.erp.bom': 'Bill of Material',
     'menu.bom.bom-list': 'BOM Expansion',
     'menu.erp.mps': 'Master Producting Schedule',

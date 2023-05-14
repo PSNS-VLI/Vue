@@ -36,9 +36,16 @@ export const asyncRouterMap = [
         path: '/erp',
         name: 'erp',
         component: BlankLayout,
-        redirect: '/erp/bom',
+        redirect: '/erp/config',
         meta: { title: 'menu.erp', icon: 'table', permission: ['erp'] },
         children: [
+          {
+            path: '/erp/config',
+            name: 'erp-config',
+            hideChildrenInMenu: true,
+            component: () => import('@/views/erp/erp/ERPWrapper'),
+            meta: { title: 'menu.erp.config', keepAlive: true, permission: ['erp'] }
+          },
           {
             path: '/erp/bom',
             name: 'erp-bom',

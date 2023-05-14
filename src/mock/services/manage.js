@@ -59,11 +59,11 @@ const activity = () => {
   return builder([{
     id: 1,
     user: {
-      nickname: '徐老师',
+      nickname: '张老师',
       avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png'
     },
     project: {
-      name: '工业工程一班',
+      name: '工业工程三班',
       action: '更新',
       event: 'BOM 任务要求'
     },
@@ -71,11 +71,11 @@ const activity = () => {
   }, {
     id: 2,
     user: {
-      nickname: '徐老师',
+      nickname: '张老师',
       avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png'
     },
     project: {
-      name: '工业工程一班',
+      name: '工业工程三班',
       action: '发布',
       event: 'BOM 任务要求'
     },

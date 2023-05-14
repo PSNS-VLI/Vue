@@ -243,6 +243,16 @@ export function calMPS (matrix, TFL, SSA, PB, LT) {
   return matrix
 }
 
+export function calMRP (matrix, SSA, PB, LT) {
+  matrix[2] = calGRforMRP(matrix[0])
+  matrix[3] = calInitPAB(matrix[3], matrix[1], matrix[2])
+  matrix[4] = calNR(matrix[3], SSA)
+  matrix[5] = calPORece(matrix[4], PB)
+  matrix[6] = calPAB(matrix[6], matrix[1], matrix[2], matrix[5])
+  matrix[7] = calPORele(matrix[5], LT)
+  return matrix
+}
+
 /**
  * calculate gross requirement
  * @param {number[]} PVList predicted volume array
@@ -261,6 +271,10 @@ export function calGR (PVList, OVList, TFL, CT = 1) {
       : OVList[CT]
   }
   return GRList
+}
+
+export function calGRforMRP (PPORele) {
+  return cloneDeep(PPORele)
 }
 
 /**
@@ -302,13 +316,7 @@ export function calNR (IPABList, SSA, CT = 1) {
 export function calPORece (NRList, PB, CT = 1) {
   const POReceList = initArrayZero(NRList.length)
   for (CT; CT < NRList.length; CT++) {
-    let n = 0
-    const NR = NRList[CT]
-    while (true) {
-      if (n * PB >= NR && NR > (n - 1) * PB) break
-      n++
-    }
-    POReceList[CT] = n * PB
+    POReceList[CT] = NRList[CT] > 0 ? Math.ceil(NRList[CT] / PB) * PB : 0
   }
   return POReceList
 }
@@ -360,6 +368,18 @@ export function calATP (POReceList, STARList, OVList, CT = 1) {
     ATPList[CT] = ATP
   }
   return ATPList
+}
+
+// MPS RCCP
+
+/**
+ * calculate single piece preparation time
+ * @param {number} PPT production preparation time
+ * @param {number} ABS average batch size
+ * @returns {number}
+ */
+export function calSPPT (PPT, ABS) {
+  return PPT / ABS
 }
 
 export function initArrayZero (length) {
