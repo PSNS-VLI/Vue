@@ -14,7 +14,7 @@
     </template>
     <div>
       <a-card :bordered="false">
-        <div>
+        <!-- <div>
           <a-carousel arrows effect="fade" autoplay class="banner">
             <div
               slot="prevArrow"
@@ -32,7 +32,7 @@
                 :style="{ backgroundImage: 'url(' + require(`@/games/1/raw/mockup${item}.png`) + ')' }"></span>
             </div>
           </a-carousel>
-        </div>
+        </div> -->
       </a-card>
       <a-card :bordered="false" class="ant-pro-components-tag-select">
         <a-form :form="form" layout="inline">
