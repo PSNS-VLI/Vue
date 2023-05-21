@@ -22,7 +22,9 @@
 <script>
 import {
   getTableColumnsTem,
-  getTableDataTem
+  getTableDataTem,
+  extractTableData,
+  inflateTableData
 } from '@/utils/erp'
 
 import MPS from './MPS.vue'
@@ -50,6 +52,10 @@ export default {
       title: '生产批量'
     }, {
       title: '160'
+    }, {
+      title: '提前期'
+    }, {
+      title: '1'
     }]
     return {
       tabActiveKey: 'MPS',
@@ -58,8 +64,13 @@ export default {
     }
   },
   created () {
-    this.mainColumns = getTableColumnsTem('mps', [2, 2, 3])
-    this.tableData = getTableDataTem('mps', [2, 2, 3])
+    this.mainColumns = getTableColumnsTem('mps', [2, 4, 4])
+    const tableData = getTableDataTem('mps', [2, 4, 4])
+    const matrix = extractTableData(tableData)
+    matrix[0] = [0, 70, 70, 70, 70,	70,	80,	80,	80,	80,	80]
+    matrix[1] = [0, 100,	90,	80,	60,	70,	90,	50,	100,	90,	70]
+    matrix[4][0] = 120
+    this.tableData = inflateTableData(tableData, matrix)
   }
 }
 </script>

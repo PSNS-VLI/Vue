@@ -220,6 +220,27 @@ export function getTableDataTem (model, timeFenceArray, params) {
   return data
 }
 
+export function extractTableData (tableData) {
+  return tableData.reduce((pre, cur) => {
+    pre.push(Object.values(cur).slice(3))
+    return pre
+  }, [])
+}
+
+export function inflateTableData (tableData, matrix) {
+  return tableData.reduce((pre, cur, index) => {
+    pre.push(Object.assign(
+      {},
+      cur,
+      matrix[index].reduce((pre, cur, index) => {
+        pre[index === 0 ? 'current_zone' : `zone_${index}`] = cur
+        return pre
+      }, {})
+      ))
+      return pre
+  }, [])
+}
+
 /**
  * calculate master production schedule
  * @param {number[][]} matrix mps data matrix
@@ -262,10 +283,10 @@ export function calGR (PVList, OVList, TFL, CT = 1) {
   const GRList = initArrayZero(PVList.length)
   for (CT; CT < PVList.length; CT++) {
     GRList[CT] = CT <= TFL[0]
-    ? PVList[CT]
-    : CT <= TFL[2]
+    ? OVList[CT]
+    : CT <= TFL[2] + TFL[1]
       ? Math.max(PVList[CT], OVList[CT])
-      : OVList[CT]
+      : PVList[CT]
   }
   return GRList
 }
@@ -361,7 +382,10 @@ export function calATP (POReceList, STARList, OVList, CT = 1) {
   for (CT; CT < POReceList.length; CT++) {
     let i = CT
     let ATP = POReceList[CT] + STARList[CT]
-    for (i; i < OVList.length; i++) if (POReceList[i] > 0) { break } else { ATP -= OVList[i] }
+    for (i; i < OVList.length; i++) {
+      if (i + 1 === OVList.length || POReceList[i] > 0) break
+      ATP -= OVList[i]
+    }
     ATPList[CT] = ATP
   }
   return ATPList

@@ -1,5 +1,28 @@
-const zoneList = ['需求时区', '计划时区', '预测时区']
-const workCenterCapacityColumns = [{
+export const bomColumns = [{
+  title: '阶层',
+  dataIndex: 'hierarchy'
+}, {
+  title: '父项编码',
+  dataIndex: 'parentKey',
+  type: 'text'
+}, {
+  title: '子项编码',
+  dataIndex: 'childKey',
+  type: 'text'
+}, {
+  title: '子项名称',
+  dataIndex: 'childName',
+  type: 'text'
+}, {
+  title: '计量单位',
+  dataIndex: 'measuringUnit',
+  type: 'text'
+}, {
+  title: '单位用量',
+  dataIndex: 'quantityPer'
+}]
+export const zoneList = ['需求时区', '计划时区', '预测时区']
+export const workCenterCapacityColumns = [{
   type: 'text',
   title: '工作中心编码',
   dataIndex: 'name'
@@ -16,7 +39,7 @@ const workCenterCapacityColumns = [{
   title: '可用能力（小时/天）',
   dataIndex: 'H'
 }]
-const workCenterTimeColumns = [{
+export const workCenterTimeColumns = [{
   type: 'text',
   title: '工作中心编码',
   dataIndex: 'name'
@@ -30,7 +53,7 @@ const workCenterTimeColumns = [{
   title: '排队时间',
   dataIndex: 'H7'
 }]
-const processRouteColumns = [{
+export const processRouteColumns = [{
   type: 'text',
   title: '物料编码',
   dataIndex: 'name'
@@ -49,7 +72,7 @@ const processRouteColumns = [{
   title: '准备时间',
   dataIndex: 'pTime'
 }]
-const mpsTableColumns = [{
+export const mpsTableColumns = [{
   title: '时区',
   children: [{
     title: '时段',
@@ -59,14 +82,14 @@ const mpsTableColumns = [{
   title: '当期',
   dataIndex: 'current_zone'
 }]
-const mrpTableColumns = [{
+export const mrpTableColumns = [{
   title: '时段',
   dataIndex: 'name'
 }, {
   title: '当期',
   dataIndex: 'current_zone'
 }]
-const crpTableColumns = [{
+export const crpTableColumns = [{
   title: '物料',
   dataIndex: 'name'
 }, {
@@ -76,7 +99,7 @@ const crpTableColumns = [{
   title: '当期',
   dataIndex: 'current_zone'
 }]
-const mpsTableData = [
+export const mpsTableData = [
   '预测量',
   '订单量',
   '计划接收量',
@@ -88,7 +111,7 @@ const mpsTableData = [
   '计划投入量',
   'ATP'
 ]
-const mrpTableData = [
+export const mrpTableData = [
   '{parent}计划投入量',
   '计划接收量',
   '毛需求量',
@@ -98,15 +121,3 @@ const mrpTableData = [
   'PAB',
   '计划投入量'
 ]
-
-export {
-  zoneList,
-  workCenterCapacityColumns,
-  workCenterTimeColumns,
-  processRouteColumns,
-  mpsTableColumns,
-  mrpTableColumns,
-  crpTableColumns,
-  mpsTableData,
-  mrpTableData
-}

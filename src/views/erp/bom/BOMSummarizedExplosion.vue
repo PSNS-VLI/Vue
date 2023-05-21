@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- table menu -->
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="48">
@@ -30,72 +29,32 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="24">
-            <a-form-item label="全表搜索">
-              <a-input-search placeholder="Search" />
-            </a-form-item>
-          </a-col>
         </a-row>
       </a-form>
     </div>
-    <!-- main content -->
-    <a-table
-      :loading="loading"
-      :pagination="false"
-      :columns="mainColumns"
-      :data-source="tData"
-    >
-      <template slot="title">
-      </template>
-      <template
-        v-for="col in mainColumns"
-        :slot="col.scopedSlots.customRender"
-        slot-scope="text, record"
-      >
-        <template v-if="col.scopedSlots.customRender !== operKey">
-          <div :key="col.scopedSlots.customRender">
-            <a-input
-              v-if="record.editable"
-              style="margin: -5px 0"
-              :value="text"
-              @change="e => handleChange(e.target.value, record.key, col.scopedSlots.customRender)"
-            />
-            <template v-else>
-              {{ text }}
-            </template>
-          </div>
-        </template>
-        <template v-else>
-          <div :key="col.scopedSlots.customRender" class="editable-row-operations">
-            <span v-if="record.editable">
-              <a-popconfirm title="确认更改?" @confirm="() => handleSave(record.key)">
-                <a>保存</a>
-              </a-popconfirm>
-              <a @click="() => handleCancel(record.key)"> 取消</a>
-            </span>
-            <span v-else>
-              <a :disabled="editingKey !== ''" @click="() => handleEdit(record.key)">编辑</a>
-            </span>
-          </div>
-        </template>
-      </template>
-    </a-table>
+    <ErpTable
+      @change="$emit('change', $event)"
+      operation="edit, add, delete, search"
+      :hasSide="false"
+      :frozenList="frozenList"
+      :mainColumns="columns"
+      :mainData="tData"/>
   </div>
 </template>
 
 <script>
 import cloneDeep from 'lodash.clonedeep'
-// eslint-disable-next-line
-import { getRoleList } from '@/api/manage'
 import { whoHasChild, treeToList, levelOrder } from '@/utils/erp'
 
 import { STable, Ellipsis } from '@/components'
+import ErpTable from '../components/ErpTable.vue'
 
 export default {
   name: 'BomSummarizedExplosion',
   components: {
     STable,
-    Ellipsis
+    Ellipsis,
+    ErpTable
   },
   props: {
     // bom data present and operation
@@ -126,8 +85,7 @@ export default {
       value: 2,
       name: '尾阶展开'
     }]
-    this.operKey = 'operation'
-    this.cacheData = []
+    this.frozenList = ['hierarchy']
     return {
       // show param
       showParam: {
@@ -135,32 +93,15 @@ export default {
         defaultRule: 0,
         choosedElement: 0,
         defaultChoose: 0,
-        nameKey: '子项名称'
+        nameKey: 'childName'
       },
-      tData: [],
-      // table loading
-      loading: false,
-      editingKey: ''
+      tData: []
     }
   },
   computed: {
-    mainColumns () {
-      const columns = cloneDeep(this.columns)
-      columns.push({
-        title: '操作',
-        scopedSlots: { customRender: this.operKey }
-      })
-      return columns.map(item => ({
-        ...item,
-        width: `${100 / columns.length}%`
-      }))
-    },
     showElements () {
-      return whoHasChild(this.bomData, 'children', true, '子项编码', '父项编码')
+      return whoHasChild(this.bomData, 'children', true, 'childKey', 'parentKey')
     }
-  },
-  created () {
-    getRoleList({ t: new Date() })
   },
   watch: {
     bomData: {
@@ -186,42 +127,6 @@ export default {
     },
     handleChooseChange (e) {
       this.$emit('showChooseChange')
-    },
-    handleChange (value, key, column) {
-      const newData = cloneDeep(this.tData)
-      const target = newData.find(item => key === item.key)
-      if (target) {
-        target[column] = value
-        this.tData = newData
-      }
-    },
-    handleEdit (key) {
-      const newData = cloneDeep(this.tData)
-      const target = newData.find(item => key === item.key)
-      this.editingKey = key
-      if (target) {
-        target.editable = true
-        this.tData = newData
-      }
-    },
-    handleSave (key) {
-      const newData = cloneDeep(this.tData)
-      const target = newData.find(item => key === item.key)
-      if (target) {
-        delete target.editable
-        this.$emit('change', newData)
-      }
-      this.editingKey = ''
-    },
-    handleCancel (key) {
-      const newData = cloneDeep(this.tData)
-      const target = newData.find(item => key === item.key)
-      this.editingKey = ''
-      if (target) {
-        Object.assign(target, this.cacheData.find(item => key === item.key))
-        delete target.editable
-        this.tData = newData
-      }
     },
     renderingTable () {
      this.tData = (() => {

@@ -45,10 +45,10 @@ export default {
   },
   computed: {
     gData: function () {
-      return listToTree(this.bomData, '子项编码', '父项编码', (item) => ({
+      return listToTree(this.bomData, 'childKey', 'parentKey', (item) => ({
         ...item,
-        key: `${item['子项编码']}`,
-        title: `${item['子项编码']}/${item['子项名称']}`
+        key: `${item['childKey']}`,
+        title: `${item['childKey']}/${item['childName']}`
       }))
     },
     dataList: function () {
@@ -104,7 +104,7 @@ export default {
           item.children = item.children || []
           // Change the parentKey of the dragObj
           // NOTE: THIS STATEMENT IS HIGHLY COUPLED WITH EXTERNAL FILE
-          dragObj['父项编码'] = Number(dropKey) || dropKey
+          dragObj['parentKey'] = Number(dropKey) || dropKey
           // where to insert
           item.children.push(dragObj)
         })

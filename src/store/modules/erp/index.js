@@ -17,7 +17,7 @@ const erp = {
   },
   getters: {
     bomTree (state) {
-      return listToTree(state.bom.bomData)
+      return listToTree(state.bom.bomData, 'childKey', 'parentKey')
     }
   },
   mutations: {

@@ -12,56 +12,45 @@
     <a-card :bordered="false">
       <div class="table-operator">
         <a-upload
+          :fileList="fileList"
           :customRequest="() => false"
           :showUploadList="false"
           :accept="excelType"
-          @change="e => handleExcelUpload(e.fileList[0].originFileObj)"
+          @change="handleExcelUpload"
         >
-          <a-button> <a-icon type="upload" /> 上传EXCEL </a-button>
+          <a-button
+            icon="upload">上传EXCEL</a-button>
         </a-upload>
         <a-button
           v-if="bomData.length > 0"
           type="primary"
           icon="download"
           @click="handleExcelExport">导出EXCEL</a-button>
-        <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
       </div>
     </a-card>
     <!-- main content -->
     <a-card :bordered="false">
-      <component
-        @change="handleBomChange"
-        :explosion-param="null"
-        :bom-data="bomData"
-        :columns="columns"
-        :is="tabActiveKey">
-      </component>
+      <keep-alive>
+        <component
+          @change="handleBomChange"
+          :explosion-param="null"
+          :bom-data="bomData"
+          :columns="columns"
+          :is="tabActiveKey">
+        </component>
+      </keep-alive>
     </a-card>
-
-    <!-- create model -->
-    <create-form
-      ref="createModal"
-      :visible="visible"
-      :loading="confirmLoading"
-      :model="mdl"
-      @cancel="handleCancel"
-      @ok="handleOk"
-    />
   </page-header-wrapper>
 </template>
 
 <script>
 import { read, utils, writeFile } from 'xlsx'
-// eslint-disable-next-line
-import cloneDeep from 'lodash.clonedeep'
-// eslint-disable-next-line
-import { generateKey } from '@/utils/erp'
 import { createNamespacedHelpers } from 'vuex'
+import { bomColumns } from '@/config/erp.config.js'
 
 // dynamic components
 import BomSummarizedExplosion from './BOMSummarizedExplosion.vue'
 import BomTreeExplosion from './BOMTreeExplosion.vue'
-import CreateForm from './modules/CreateForm.vue'
 
 const { mapState, mapMutations } = createNamespacedHelpers('erp/bom')
 
@@ -69,8 +58,7 @@ export default {
   name: 'BomListWrapper',
   components: {
     BomSummarizedExplosion,
-    BomTreeExplosion,
-    CreateForm
+    BomTreeExplosion
   },
   data () {
     this.tabList = [
@@ -80,12 +68,9 @@ export default {
     // upload file types
     this.excelType = '.xls, .xlsx'
     return {
-      // create model
-      visible: false,
-      confirmLoading: false,
-      mdl: null,
-      // tabbar
-      tabActiveKey: 'BomSummarizedExplosion'
+      fileList: [],
+      tabActiveKey: 'BomSummarizedExplosion',
+      columns: bomColumns
     }
   },
   computed: {
@@ -94,41 +79,38 @@ export default {
       'excelName',
       'bomData'
     ]),
-    columns () {
-      const columns = this.bomData[0]
-      return columns ? Object.keys(columns).filter(
-        item => item !== 'key'
-      ).map(item => ({
-        title: item,
-        dataIndex: item,
-        scopedSlots: { customRender: item }
-      }))
-      : []
+    titleKey () {
+      return this.columns.reduce((pre, cur) => {
+        pre[cur.title] = cur.dataIndex
+        return pre
+      }, {})
+    },
+    keyTitle () {
+      return this.columns.reduce((pre, cur) => {
+        pre[cur.dataIndex] = cur.title
+        return pre
+      }, {})
     }
-  },
-  created () {
   },
   methods: {
     ...mapMutations([
       'setBomData',
       'setExcelName'
     ]),
-    handleExcelUpload (excel) {
-      var self = this
-      self.setExcelName({ data: excel.name })
-      var reader = new FileReader()
-      reader.onload = function (e) {
+    handleExcelUpload (event) {
+      const excel = event.fileList.pop().originFileObj
+      this.fileList = event.fileList
+      this.setExcelName({ data: excel.name })
+      const reader = new FileReader()
+      reader.onload = (e) => {
         var wb = read(e.target.result, {
           type: 'array'
         })
         var excelJson = utils.sheet_to_json(
           wb.Sheets[wb.SheetNames[0]]
         )
-        self.setBomData({
-          data: excelJson.map((item, index) => ({
-            key: index,
-            ...item
-          }))
+        this.setBomData({
+          data: this.convertExcelData(excelJson)
         })
       }
       reader.readAsArrayBuffer(excel)
@@ -138,11 +120,7 @@ export default {
       utils.book_append_sheet(
         wb,
         utils.json_to_sheet(
-          this.bomData.map(item => {
-            delete item.key
-            delete item.index
-            return item
-          })
+          this.convertExcelData(this.bomData, 'output')
         )
       )
       writeFile(
@@ -153,59 +131,27 @@ export default {
     handleBomChange (data) {
       this.setBomData({ data })
     },
-    handleAdd () {
-      this.mdl = null
-      this.visible = true
-    },
-    handleOk () {
-      const form = this.$refs.createModal.form
-      this.confirmLoading = true
-      form.validateFields((errors, values) => {
-        if (!errors) {
-          console.log('values', values)
-          if (values.id > 0) {
-            // 修改 e.g.
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                resolve()
-              }, 1000)
-            }).then(res => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-              this.$refs.table.refresh()
-
-              this.$message.info('修改成功')
-            })
-          } else {
-            // 新增
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                resolve()
-              }, 1000)
-            }).then(res => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-              this.$refs.table.refresh()
-
-              this.$message.info('新增成功')
-            })
-          }
-        } else {
-          this.confirmLoading = false
-        }
-      })
-    },
-    handleCancel () {
-      this.visible = false
-
-      const form = this.$refs.createModal.form
-      form.resetFields() // 清理表单数据（可不做）
+    convertExcelData (excelData, tag) {
+      tag = tag || 'input'
+      if (tag === 'input') {
+        excelData = excelData.map((row, index) => {
+          return Object.keys(row).reduce((pre, cur) => {
+            pre['key'] = index
+            pre[this.titleKey[cur]] = row[cur]
+            return pre
+          }, {})
+        })
+      }
+      if (tag === 'output') {
+        excelData = excelData.map(row => {
+          delete row.key
+          return Object.keys(row).reduce((pre, cur) => {
+            pre[this.keyTitle[cur]] = row[cur]
+            return pre
+          }, {})
+        })
+      }
+      return excelData
     }
   }
 }

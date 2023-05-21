@@ -28,6 +28,9 @@
             <template v-else>删除</template>
           </a-button>
         </a-col>
+        <a-col :md="6" :sm="6" v-if="operation.includes('search')">
+          <a-input-search placeholder="Search" />
+        </a-col>
       </a-row>
     </div>
     <div class="table-wrapper">
@@ -55,7 +58,7 @@
             <div v-if="mainColAndScoped.textFields.includes(item)">
               <keep-alive>
                 <a-input
-                  v-if="isEdit && record.editable && !frozenList.includes(item)"
+                  v-if="isEdit && !frozenList.includes(item)"
                   style="margin: -5px 0"
                   :value="text"
                   @input="e => handleChange(e.target.value, record, index, item)"
@@ -68,7 +71,7 @@
             <div v-else>
               <keep-alive>
                 <a-input-number
-                  v-if="isEdit && record.editable && !frozenList.includes(item)"
+                  v-if="isEdit && !frozenList.includes(item)"
                   style="margin: -5px 0"
                   :value="text"
                   @change="e => handleChange(e, record, index, item)"
@@ -172,7 +175,6 @@ export default {
         columns.splice(index1 >= 0 ? index1 : columns.length, 1)
         dataIndexList.splice(index2 >= 0 ? index2 : dataIndexList.length, 1)
       }
-      console.log(columns)
       return { columns, dataIndexList, textFields }
     },
     inputListeners: function () {
@@ -190,8 +192,7 @@ export default {
     handleAdd () {
       this.$emit('change', this.mainData.concat(
         [Object.assign({
-          key: Date.now().toString(),
-          editable: true
+          key: Date.now().toString()
         }, this.mainColAndScoped.dataIndexList.reduce((pre, cur) => {
           pre[cur] = 0
           return pre
@@ -204,7 +205,6 @@ export default {
       this.$emit('change', data)
     },
     handleChange (newValue, rowData, rowIndex, columnKey) {
-      console.log(newValue)
       const data = this.mainData.map(item => ({ ...item }))
       data.find(item => item.key === rowData.key)[columnKey] = newValue
       this.$emit('change', data)
