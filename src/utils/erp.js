@@ -23,24 +23,21 @@ export function listToTree (array, currentKey, parentKey, cleaner, ancestorTag) 
   cleaner = cleaner || (item => item)
   ancestorTag = ancestorTag || '-'
   if (array.length === 0) return []
-  array = cloneDeep(array)
-  array = array.map(item => cleaner(item))
+  array = cloneDeep(array).map(item => cleaner(item))
   const tree = array.filter(
     item => item[parentKey] === ancestorTag).map(
       item => Object.assign({}, item, { children: [] }))
   tree.forEach(item => findChild(item, item[currentKey]))
   function findChild (treeNode, parentTag) {
     array.forEach(item => {
-      if (!item.searched && item[parentKey] === parentTag) {
+      if (item[parentKey] === parentTag) {
         treeNode.children.push(item)
-        item.searched = true
         item.children = []
         findChild(item, item[currentKey])
       }
     })
     if (treeNode.children.length === 0) delete treeNode.children
   }
-  levelOrder(tree, null, item => { delete item.searched })
   return tree
 }
 
