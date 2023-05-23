@@ -381,9 +381,9 @@ export function calATP (POReceList, STARList, OVList, CT = 1) {
   const ATPList = initArrayZero(POReceList.length)
   for (CT; CT < POReceList.length; CT++) {
     let i = CT
-    let ATP = POReceList[CT] + STARList[CT]
-    for (i; i < OVList.length; i++) {
-      if (i + 1 === OVList.length || POReceList[i] > 0) break
+    let ATP = POReceList[CT] + STARList[CT] - OVList[CT]
+    for (++i; i < OVList.length; i++) {
+      if (POReceList[i] > 0) break
       ATP -= OVList[i]
     }
     ATPList[CT] = ATP
