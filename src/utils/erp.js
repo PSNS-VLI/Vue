@@ -252,10 +252,13 @@ export function inflateTableData (tableData, matrix) {
  */
 export function calMPS (matrix, TFL, SSA, PB, LT) {
   matrix[3] = calGR(matrix[0], matrix[1], TFL)
-  matrix[4] = calInitPAB(matrix[4], matrix[2], matrix[3])
-  matrix[5] = calNR(matrix[4], SSA)
-  matrix[6] = calPORece(matrix[5], PB)
-  matrix[7] = calPAB(matrix[7], matrix[2], matrix[3], matrix[6])
+  for (let CT = 1; CT < matrix[4].length; CT++) {
+    const PAB = CT === 1 ? matrix[4][0] : matrix[7][CT - 1]
+    matrix[4][CT] = calInitPAB(PAB, matrix[2][CT], matrix[3][CT])
+    matrix[5][CT] = calNR(matrix[4][CT], SSA)
+    matrix[6][CT] = calPORece(matrix[5][CT], PB)
+    matrix[7][CT] = calPAB(PAB, matrix[2][CT], matrix[3][CT], matrix[6][CT])
+  }
   matrix[8] = calPORele(matrix[6], LT)
   matrix[9] = calATP(matrix[6], matrix[2], matrix[1])
   return matrix
@@ -263,10 +266,13 @@ export function calMPS (matrix, TFL, SSA, PB, LT) {
 
 export function calMRP (matrix, SSA, PB, LT) {
   matrix[2] = calGRforMRP(matrix[0])
-  matrix[3] = calInitPAB(matrix[3], matrix[1], matrix[2])
-  matrix[4] = calNR(matrix[3], SSA)
-  matrix[5] = calPORece(matrix[4], PB)
-  matrix[6] = calPAB(matrix[6], matrix[1], matrix[2], matrix[5])
+  for (let CT = 1; CT < matrix[4].length; CT++) {
+    const PAB = CT === 1 ? matrix[4][0] : matrix[7][CT - 1]
+    matrix[4][CT] = calInitPAB(PAB, matrix[2][CT], matrix[3][CT])
+    matrix[5][CT] = calNR(matrix[4][CT], SSA)
+    matrix[6][CT] = calPORece(matrix[5][CT], PB)
+    matrix[7][CT] = calPAB(PAB, matrix[2][CT], matrix[3][CT], matrix[6][CT])
+  }
   matrix[7] = calPORele(matrix[5], LT)
   return matrix
 }
@@ -297,61 +303,43 @@ export function calGRforMRP (PPORele) {
 
 /**
  * calculate initial projected available
- * @param {number[]} IPABList previous zone initial projected available
- * @param {number[]} STARList schedule the amount received
- * @param {number[]} GRList gross requirement
- * @param {number} CT current time zone index
- * @returns {number[]} an array of initial projected available balance
+ * @param {number} PAB projected available list
+ * @param {number} STAR schedule the amount received
+ * @param {number} GR gross requirement
+ * @returns {number} initial projected available balance
  */
-export function calInitPAB (IPABList, STARList, GRList, CT = 1) {
-  for (CT; CT < IPABList.length; CT++) {
-    IPABList[CT] = IPABList[CT - 1] + STARList[CT] - GRList[CT]
-  }
-  return IPABList
+export function calInitPAB (PAB, STAR, GR) {
+    return PAB + STAR - GR
 }
 
 /**
  * calculate net requirement
- * @param {number[]} IPABList initial projected available
+ * @param {number} IPABList initial projected available
  * @param {number} SSA safety stock amount
- * @param {number} [CT=1] current time zone index
- * @returns {number[]} an array of net requirement
+ * @returns {number} net requirement
  */
-export function calNR (IPABList, SSA, CT = 1) {
-  const NRList = initArrayZero(IPABList.length)
-  for (CT; CT < IPABList.length; CT++) {
-    NRList[CT] = IPABList[CT] >= SSA ? 0 : SSA - IPABList[CT]
-  }
-  return NRList
+export function calNR (IPAB, SSA) {
+    return IPAB >= SSA ? 0 : SSA - IPAB
 }
 
 /**
  * calculate planned order receipts
- * @param {number[]} NRList net requirement
+ * @param {number} NR net requirement
  * @param {number} PB production batch
- * @param {number} [CT=1] current time zone index
  */
-export function calPORece (NRList, PB, CT = 1) {
-  const POReceList = initArrayZero(NRList.length)
-  for (CT; CT < NRList.length; CT++) {
-    POReceList[CT] = NRList[CT] > 0 ? Math.ceil(NRList[CT] / PB) * PB : 0
-  }
-  return POReceList
+export function calPORece (NR, PB) {
+    return NR > 0 ? Math.ceil(NR / PB) * PB : 0
 }
 
 /**
  * calculate projected available balance
- * @param {number[]} PABList previous projected availabled balance
- * @param {number[]} STARList schedule the amount received
- * @param {number[]} GRList gross requirement
- * @param {number[]} POReceList planned order receipts
- * @param {number} [CT=1] current time zone index
+ * @param {number} PAB previous projected availabled balance
+ * @param {number} STAR schedule the amount received
+ * @param {number} GR gross requirement
+ * @param {number} PORece planned order receipts
  */
-export function calPAB (PABList, STARList, GRList, POReceList, CT = 1) {
-  for (CT; CT < PABList.length; CT++) {
-    PABList[CT] = PABList[CT - 1] + STARList[CT] - GRList[CT] + POReceList[CT]
-  }
-  return PABList
+export function calPAB (PAB, STAR, GR, PORece) {
+    return PAB + STAR - GR + PORece
 }
 
 /**
