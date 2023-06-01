@@ -1,31 +1,31 @@
 let cards = [
   {
-    id: 'pikemen',
+    id: 'pikemen', // service marketing
     type: 'attack',
-    title: 'Pikemen',
-    description: 'Spend 1 <b>Food</b><br>Deal 1 <b>Damage</b>',
-    note: 'Send your disposable men to a certain death.',
+    title: 'Service Marketing',
+    description: 'Spend 1 <b>Repertory</b><br>Deal 1 <b>Capital</b>',
+    note: 'Meet customer needs by providing high quality service.',
     play (player, opponent) {
       player.food -= 1
       opponent.health -= 1
     }
   },
   {
-    id: 'catapult',
+    id: 'catapult', // Thero CRM
     type: 'attack',
-    title: 'Catapult',
-    description: 'Spend 2 <b>Food</b><br>Deal 2 <b>Damage</b>',
+    title: 'Thero CRM',
+    description: 'Spend 2 <b>Repertory</b><br>Deal 2 <b>Capital</b>',
     play (player, opponent) {
       player.food -= 2
       opponent.health -= 2
     }
   },
   {
-    id: 'trebuchet',
+    id: 'trebuchet', // Thero STP
     type: 'attack',
-    title: 'Trebuchet',
-    description: 'Spend 3 <b>Food</b><br>Take 1 <b>Damage</b><br>Deal 4 <b>Damage</b>',
-    note: ' &#171;The finest machine Man ever created!&#187;',
+    title: 'Thero STP',
+    description: 'Spend 3 <b>Repertory</b><br>Take 1 <b>Capital</b><br>Deal 4 <b>Capital</b>',
+    note: 'Market segmentation, target market and positioning theory!',
     play (player, opponent) {
       player.food -= 3
       player.health -= 1
@@ -33,85 +33,85 @@ let cards = [
     }
   },
   {
-    id: 'archers',
+    id: 'archers', // Theory 4P
     type: 'attack',
-    title: 'Archers',
-    description: 'Spend 3 <b>Food</b><br>Deal 3 <b>Damage</b>',
-    note: '&#171;Ready your bows! Nock! Mark! Draw! Loose!&#187;',
+    title: 'Theory 4P',
+    description: 'Spend 3 <b>Repertory</b><br>Deal 3 <b>Capital</b>',
+    note: 'Product, Price, Promotion, Place.(Remember them!)',
     play (player, opponent) {
       player.food -= 3
       opponent.health -= 3
     }
   },
   {
-    id: 'knighthood',
+    id: 'knighthood', // Theory 5C
     type: 'attack',
-    title: 'Knighthood',
-    description: 'Spend 7 <b>Food</b><br>Deal 5 <b>Damage</b>',
-    note: 'Knights may be even more expansive than their mount.',
+    title: 'Theory 5C',
+    description: 'Spend 7 <b>Repertory</b><br>Deal 5 <b>Capital</b>',
+    note: 'Customer, Company, Competition, Channel and Context.(Customer first!)',
     play (player, opponent) {
       player.food -= 7
       opponent.health -= 5
     }
   },
   {
-    id: 'repair',
+    id: 'repair', // financing
     type: 'support',
-    title: 'Repair',
-    description: 'Repair 5 <b>Damage</b><br>Skip your next turn',
+    title: 'Financing',
+    description: 'Repair 5 <b>Capital</b><br>Skip your next turn',
     play (player, opponent) {
       player.skipTurn = true
       player.health += 5
     }
   },
   {
-    id: 'quick-repair',
+    id: 'quick-repair', // marketing
     type: 'support',
-    title: 'Quick Repair',
-    description: 'Spend 3 <b>Food</b><br>Repair 3 <b>Damage</b>',
-    note: 'This is not without consequences on the moral and energy!',
+    title: 'Marketing',
+    description: 'Spend 3 <b>Repertory</b><br>Repair 3 <b>Capital</b>',
+    note: 'Marketing is very important for businesses!',
     play (player, opponent) {
       player.food -= 3
       player.health += 3
     }
   },
   {
-    id: 'farm',
+    id: 'farm', // supply chain
     type: 'support',
-    title: 'Farm',
-    description: 'Gather 5 <b>Food</b><br>Skip your next turn',
-    note: '&#171;One should be patient to grow crops.&#187;',
+    title: 'Supply Chain',
+    description: 'Gather 5 <b>Repertory</b><br>Skip your next turn',
+    note: '&#171;The advantage in the supply chain is temporary.&#187;',
     play (player, opponent) {
       player.skipTurn = true
       player.food += 5
     }
   },
   {
-    id: 'granary',
+    id: 'granary', // production plan
     type: 'support',
-    title: 'Granary',
-    description: 'Gather 2 <b>Food</b>',
+    title: 'Production Plan',
+    description: 'Gather 2 <b>Repertory</b>',
     play (player, opponent) {
       player.food += 2
     }
   },
   {
-    id: 'poison',
+    id: 'poison', // cost leadership
     type: 'special',
-    title: 'Poison',
-    description: 'Spend 1 <b>Food</b><br>Your opponent lose 3 <b>Food</b>',
-    note: 'Send someone you trust poison the enemy granary.',
+    title: 'Cost Leadership',
+    description: 'Spend 1 <b>Capital</b><br>Your opponent lose 3 <b>Capital</b>',
+    note: 'Reduce costs and offer products at lower prices to gain market share.',
     play (player, opponent) {
-      player.food -= 1
-      opponent.food -= 3
+      player.health -= 1
+      opponent.health -= 3
     }
   },
   {
-    id: 'fireball',
+    id: 'fireball', // innovate
     type: 'special',
-    title: 'Fireball',
-    description: 'Take 3 <b>Damage</b><br>Deal 5 <b>Damage</b><br>Skip your turn',
-    note: '&#171;Magic isn\'t for kids. You fool.&#187;',
+    title: 'Innovate',
+    description: 'Take 3 <b>Capital</b><br>Deal 5 <b>Capital</b><br>Skip your turn',
+    note: 'Enhance the core competitiveness of enterprises through innovation.',
     play (player, opponent) {
       player.health -= 3
       player.skipTurn = true
@@ -119,20 +119,20 @@ let cards = [
     }
   },
   {
-    id: 'chapel',
+    id: 'chapel', // SWOT
     type: 'special',
-    title: 'Chapel',
+    title: 'SWOT!',
     description: 'Do nothing',
-    note: 'Pray in the chapel, and hope someone will listen.',
+    note: 'Conduct a SWOT analysis of the business and wait for new opportunities.',
     play (player, opponent) {
       // Nothing happens...
     }
   },
   {
-    id: 'curse',
+    id: 'curse', // price war
     type: 'special',
-    title: 'Curse',
-    description: 'Everyone:<br>Lose 3 <b>Food</b><br>Take 3 <b>Damage</b>',
+    title: 'Price War',
+    description: 'Everyone:<br>Lose 3 <b>Repertory</b><br>Take 3 <b>Capital</b>',
     play (player, opponent) {
       player.food -= 3
       player.health -= 3
@@ -141,10 +141,10 @@ let cards = [
     }
   },
   {
-    id: 'miracle',
+    id: 'miracle', // coopetition
     type: 'special',
-    title: 'Miracle',
-    description: 'Everyone:<br>Gather 3 <b>Food</b><br>Repair 3 <b>Damage</b>',
+    title: 'Co-opetition',
+    description: 'Everyone:<br>Gather 3 <b>Repertory</b><br>Repair 3 <b>Capital</b>',
     play (player, opponent) {
       player.food += 3
       player.health += 3

@@ -139,7 +139,7 @@ export default {
 
 </script>
 
-<style lang="less" scoped>
+<style scoped>
 @import url('./style/transitions.css');
 @import url('./style/style.css');
 </style>

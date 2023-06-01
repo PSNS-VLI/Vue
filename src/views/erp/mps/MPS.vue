@@ -19,9 +19,11 @@ import {
   inflateTableData,
   calMPS
 } from '@/utils/erp.js'
+import { createNamespacedHelpers } from 'vuex'
 
 import ErpTable from '../components/ErpTable.vue'
 
+const { mapMutations } = createNamespacedHelpers('erp/mps')
 export default {
   components: {
     ErpTable
@@ -55,16 +57,19 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setPORele']),
     calMainData (mainData) {
+      const matrix = extractTableData(mainData)
       this.mainData = inflateTableData(
         mainData,
         calMPS(
-        extractTableData(mainData),
-        [2, 2, 3],
+        matrix,
+        [2, 4, 4],
         20,
         160,
         1)
       )
+      this.setPORele({ data: matrix[8] })
     }
   }
 }

@@ -58,6 +58,7 @@ export default {
         mainData,
         calMRP(
         this.extractMainData(mainData),
+        20,
         160,
         1)
       )

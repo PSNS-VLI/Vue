@@ -23,15 +23,15 @@ export function listToTree (array, currentKey, parentKey, cleaner, ancestorTag) 
   cleaner = cleaner || (item => item)
   ancestorTag = ancestorTag || '-'
   if (array.length === 0) return []
-  array = cloneDeep(array).map(item => cleaner(item))
+  array = cloneDeep(array)
   const tree = array.filter(
     item => item[parentKey] === ancestorTag).map(
-      item => Object.assign({}, item, { children: [] }))
+      item => Object.assign({}, cleaner(item), { children: [] }))
   tree.forEach(item => findChild(item, item[currentKey]))
   function findChild (treeNode, parentTag) {
     array.forEach(item => {
       if (item[parentKey] === parentTag) {
-        treeNode.children.push(item)
+        treeNode.children.push(cleaner(item, treeNode, parentTag))
         item.children = []
         findChild(item, item[currentKey])
       }
@@ -266,12 +266,12 @@ export function calMPS (matrix, TFL, SSA, PB, LT) {
 
 export function calMRP (matrix, SSA, PB, LT) {
   matrix[2] = calGRforMRP(matrix[0])
-  for (let CT = 1; CT < matrix[4].length; CT++) {
-    const PAB = CT === 1 ? matrix[4][0] : matrix[7][CT - 1]
-    matrix[4][CT] = calInitPAB(PAB, matrix[2][CT], matrix[3][CT])
-    matrix[5][CT] = calNR(matrix[4][CT], SSA)
-    matrix[6][CT] = calPORece(matrix[5][CT], PB)
-    matrix[7][CT] = calPAB(PAB, matrix[2][CT], matrix[3][CT], matrix[6][CT])
+  for (let CT = 1; CT < matrix[3].length; CT++) {
+    const PAB = CT === 1 ? matrix[3][0] : matrix[5][CT - 1]
+    matrix[3][CT] = calInitPAB(PAB, matrix[1][CT], matrix[2][CT])
+    matrix[4][CT] = calNR(matrix[3][CT], SSA)
+    matrix[5][CT] = calPORece(matrix[4][CT], PB)
+    matrix[6][CT] = calPAB(PAB, matrix[1][CT], matrix[2][CT], matrix[5][CT])
   }
   matrix[7] = calPORele(matrix[5], LT)
   return matrix
@@ -290,7 +290,7 @@ export function calGR (PVList, OVList, TFL, CT = 1) {
   for (CT; CT < PVList.length; CT++) {
     GRList[CT] = CT <= TFL[0]
     ? OVList[CT]
-    : CT <= TFL[2] + TFL[1]
+    : CT <= TFL[1] + TFL[0]
       ? Math.max(PVList[CT], OVList[CT])
       : PVList[CT]
   }

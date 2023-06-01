@@ -13,7 +13,7 @@
                   :default-value="showParam.defaultRule"
                 >
                   <template v-for="s in showRules">
-                    <a-select-option :key="s.value" :value="s.value">{{ s.name }}</a-select-option>
+                    <a-select-option :key="s.key" :value="s.value">{{ s.name }}</a-select-option>
                   </template>
                 </a-select>
               </a-form-item>
@@ -34,8 +34,11 @@
 <script>
 import {
   getTableColumnsTem,
-  getTableDataTem
+  getTableDataTem,
+  extractTableData,
+  inflateTableData
 } from '@/utils/erp'
+import { mapGetters } from 'vuex'
 
 import MRP from './MRP.vue'
 
@@ -44,19 +47,6 @@ export default {
     MRP
   },
   data () {
-    this.showRules = [{
-      key: 'identedExplosion',
-      value: 0,
-      name: '多阶展开'
-    }, {
-      key: 'singleLevelExplosion',
-      value: 1,
-      name: '单阶展开'
-    }, {
-      key: 'finalExplosion',
-      value: 2,
-      name: '尾阶展开'
-    }]
     this.sideColumns = [{
       title: '计划接收量'
     }, {
@@ -66,13 +56,7 @@ export default {
     }, {
       title: '1'
     }, {
-      title: '底层码'
-    }, {
-      title: '1'
-    }, {
       title: '当期PAB'
-    }, {
-      title: '20'
     }, {
       title: '安全库存'
     }, {
@@ -80,7 +64,7 @@ export default {
     }, {
       title: '批量'
     }, {
-      title: '100'
+      title: '160'
     }]
     return {
       // show param
@@ -93,13 +77,29 @@ export default {
       tableData: []
     }
   },
+  computed: {
+    ...mapGetters('erp', {
+      showRules: 'mrpList',
+      POReleDict: 'POReleDict'
+    })
+  },
   created () {
     this.mainColumns = getTableColumnsTem('mrp', [2, 2, 3])
-    this.tableData = getTableDataTem('mrp', [2, 2, 3], { field: { parent: 'ZXC' } })
+    // this.tableData = this.genTableData(this.POReleDict[this.showRules[this.showParam.defaultRule].key])
+    this.tableData = this.genTableData([0, 50,	50,	60,	60,	60,	60,	90])
   },
   methods: {
     handleRuleChange (e) {
+      this.tableData = this.genTableData(this.POReleDict[this.showRules[e].key])
       this.$emit('showRuleChange')
+    },
+    genTableData (PORele) {
+      const data = getTableDataTem('mrp', [2, 2, 3], { field: { parent: 'ZXC' } })
+      if (!PORele) return data
+      const matrix = extractTableData(data)
+      matrix[0] = PORele
+      matrix[3][0] = 20
+      return inflateTableData(data, matrix)
     }
   }
 }
