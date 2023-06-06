@@ -1,7 +1,9 @@
 import { isIE } from '@/utils/util'
 
 // 判断环境不是 prod 或者 preview 是 true 时，加载 mock 服务
-if (process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'true') {
+// if (process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'true') {
+// eslint-disable-next-line no-constant-condition
+if (true) {
   if (isIE()) {
     console.error('[antd-pro] ERROR: `mockjs` NOT SUPPORT `IE` PLEASE DO NOT USE IN `production` ENV.')
   }
@@ -15,6 +17,9 @@ if (process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'tr
   require('./services/other')
   require('./services/tagCloud')
   require('./services/article')
+  // games mock
+  const r = require.context('@/games/', true, /\.mock\.js$/)
+  r.keys().forEach(r)
 
   Mock.setup({
     timeout: 800 // setter delay time

@@ -13,7 +13,7 @@ function resolve (dir) {
 // check Git
 function getGitHash () {
   try {
-    console.log("Git版本" + GitRevision.version())
+    console.log('Git版本' + GitRevision.version())
     return GitRevision.version()
   } catch (e) {}
   return 'unknown'
@@ -41,6 +41,7 @@ const assetsCDN = {
 
 // vue.config.js
 const vueConfig = {
+  publicPath: '/static/',
   configureWebpack: {
     // webpack plugins
     plugins: [
