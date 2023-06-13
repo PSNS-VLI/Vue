@@ -38,6 +38,7 @@ export function listToTree (array, currentKey, parentKey, cleaner, ancestorTag) 
     })
     if (treeNode.children.length === 0) delete treeNode.children
   }
+  console.log(tree)
   return tree
 }
 

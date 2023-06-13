@@ -1,14 +1,14 @@
 import Mock from 'mockjs2'
 import { builder, getBody } from '../util'
 
-const username = ['admin', 'super']
-// 强硬要求 ant.design 相同密码
-// '21232f297a57a5a743894a0e4a801fc3',
-const password = ['8914de686ab28dc22f30d3d8e107ff6c', '21232f297a57a5a743894a0e4a801fc3'] // admin, ant.design
+const username = ['admin', 'student']
+// md5加密
+const password = ['21232f297a57a5a743894a0e4a801fc3', 'cd73502828457d15655bbd7a63fb0bc8'] // admin, ant.design
+const adminToken = '4291d7da9005377ec9aec4a71ea837f'
+const studentToken = '4291d7da9005377ec9aec4a71ea837d'
 
 const login = (options) => {
   const body = getBody(options)
-  console.log('mock: body', body)
   if (!username.includes(body.username) || !password.includes(body.password)) {
     return builder({ isLogin: true }, '账户或密码错误', 401)
   }
@@ -28,7 +28,7 @@ const login = (options) => {
     'deleted': 0,
     'roleId': 'admin',
     'lang': 'zh-CN',
-    'token': '4291d7da9005377ec9aec4a71ea837f'
+    'token': body.username === 'admin' ? adminToken : studentToken
   }, '', 200, { 'Custom-Header': Mock.mock('@guid') })
 }
 

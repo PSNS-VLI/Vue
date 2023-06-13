@@ -1,33 +1,35 @@
 <template>
   <page-header-wrapper>
-    <a-card :bordered="false">
-      <div class="table-page-search-wrapper">
-        <a-form layout="inline">
-          <a-row :gutter="48">
-            <a-col :md="6" :sm="24">
-              <a-form-item label="选择项目">
-                <a-select
-                  @change="handleRuleChange"
-                  v-model="showParam.explosionRule"
-                  :placeholder="showRules[showParam.explosionRule].name"
-                  :default-value="showParam.defaultRule"
-                >
-                  <template v-for="s in showRules">
-                    <a-select-option :key="s.key" :value="s.value">{{ s.name }}</a-select-option>
-                  </template>
-                </a-select>
-              </a-form-item>
-            </a-col>
-          </a-row>
-        </a-form>
-      </div>
-    </a-card>
-    <a-card :bordered="false">
-      <MRP
-        :sideColumns="sideColumns"
-        :mainColumns="mainColumns"
-        :tableData="tableData"/>
-    </a-card>
+    <template v-if="hasData">
+      <a-card :bordered="false">
+        <div class="table-page-search-wrapper">
+          <a-form layout="inline">
+            <a-row :gutter="48">
+              <a-col :md="6" :sm="24">
+                <a-form-item label="选择项目">
+                  <a-select
+                    @change="handleRuleChange"
+                    v-model="showParam.explosionRule"
+                    :placeholder="showRules[showParam.explosionRule].name"
+                    :default-value="showParam.defaultRule"
+                  >
+                    <template v-for="s in showRules">
+                      <a-select-option :key="s.key" :value="s.value">{{ s.name }}</a-select-option>
+                    </template>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </a-form>
+        </div>
+      </a-card>
+      <a-card :bordered="false">
+        <MRP
+          :sideColumns="sideColumns"
+          :mainColumns="mainColumns"
+          :tableData="tableData"/>
+      </a-card>
+    </template>
   </page-header-wrapper>
 </template>
 
@@ -81,12 +83,13 @@ export default {
     ...mapGetters('erp', {
       showRules: 'mrpList',
       POReleDict: 'POReleDict'
-    })
+    }),
+    hasData () {
+      return this.showRules.length !== 0
+    }
   },
   created () {
-    this.mainColumns = getTableColumnsTem('mrp', [2, 2, 3])
-    // this.tableData = this.genTableData(this.POReleDict[this.showRules[this.showParam.defaultRule].key])
-    this.tableData = this.genTableData([0, 50,	50,	60,	60,	60,	60,	90])
+    this.initModule()
   },
   methods: {
     handleRuleChange (e) {
@@ -100,6 +103,25 @@ export default {
       matrix[0] = PORele
       matrix[3][0] = 20
       return inflateTableData(data, matrix)
+    },
+    initModule () {
+      const vm = this
+      if (this.hasData) {
+        this.mainColumns = getTableColumnsTem('mrp', [2, 2, 3])
+        // this.tableData = this.genTableData(this.POReleDict[this.showRules[this.showParam.defaultRule].key])
+        this.tableData = this.genTableData([0, 50,	50,	60,	60,	60,	60,	90])
+      } else {
+        const modal = this.$error({
+          keyboard: false,
+          title: '缺少必要步骤',
+          content: '请先进行BOM模块的实验！',
+          onOk () {
+            vm.$router.push('/erp/bom').then(_ => {
+              modal.destroy()
+            })
+          }
+        })
+      }
     }
   }
 }

@@ -40,10 +40,11 @@ export function getSmsCaptcha (parameter) {
   })
 }
 
-export function getInfo () {
+export function getInfo (parameter) {
   return request({
     url: userApi.UserInfo,
     method: 'get',
+    data: parameter,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
     }

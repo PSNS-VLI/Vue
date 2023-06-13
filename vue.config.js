@@ -41,7 +41,7 @@ const assetsCDN = {
 
 // vue.config.js
 const vueConfig = {
-  publicPath: '/static/',
+  publicPath: '/erp/',
   configureWebpack: {
     // webpack plugins
     plugins: [
